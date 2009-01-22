@@ -1,0 +1,12 @@
+import(tcltk)
+
+export(getSocketClients,
+       getSocketClientsNames,
+       getSocketServerName,
+       getSocketServers,
+	   parSocket,
+       processSocket,
+       sendSocketClients,
+       closeSocketClients,
+       startSocketServer,
+       stopSocketServer)

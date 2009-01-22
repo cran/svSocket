@@ -1,0 +1,542 @@
+> # CLI torture test, copyright (c) Ph. Grosjean (phgrosjean@sciviews.org)
+> # GNU GPL => 2 license
+> # A series of commands to check for R CLI (or console widget)
+> # Version 1.0-0
+> 
+> ## Simple instructions
+> 1+1            # Simple command with one line of output
+[1] 2
+> 1:100          # Simple command with several lines of output
+  [1]   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18
+ [19]  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35  36
+ [37]  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53  54
+ [55]  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71  72
+ [73]  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89  90
+ [91]  91  92  93  94  95  96  97  98  99 100
+> search()       # Evaluation of a function
+ [1] ".GlobalEnv"        "tools:RGUI"        "package:stats"    
+ [4] "package:graphics"  "package:grDevices" "package:utils"    
+ [7] "package:datasets"  "package:methods"   "TempEnv"          
+[10] "Autoloads"         "package:base"     
+> ls()           # Idem... look if this function is evaluated in .GlobalEnv!
+ [1] "Parse"                 "TempEnv_"              "capture.all"          
+ [4] "closeSocketClients"    "cmd"                   "cmd0"                 
+ [7] "cmdfile"               "getSocketClients"      "getSocketClientsNames"
+[10] "getSocketServerName"   "getSocketServers"      "gettext_"             
+[13] "gettextf_"             "i"                     "out"                  
+[16] "outfile"               "processSocket"         "res"                  
+[19] "sendSocketClients"     "startSocketServer"     "stopSocketServer"     
+> 
+> ## Multiple instructions on one line
+> 1+1; 2+2    # Two successive prints
+[1] 2
+[1] 4
+> 1+1; cat("test\n"); 2+2   # Print, cat, print
+[1] 2
+test
+[1] 4
+> 1+1; cat("test"); 2+2   # Idem, but cat without \n
+[1] 2
+test[1] 4
+> 
+> ## Visible/invisible output
+> invisible(1)   # Command with invisible result
+> a <- 1:10      # Idem
+> (a <- 1:10)    # Idem, with visible output
+ [1]  1  2  3  4  5  6  7  8  9 10
+> for (i in 1:3) print(i)  # Output within a loop
+[1] 1
+[1] 2
+[1] 3
+> for (i in 1:3) i  # Do not explicit use print(), so output nothing
+> 
+> cat("test\n")  # Simple text print with carriage return
+test
+> cat("test")         # Idem, but without carriage return
+test> 
+> ## S4 objects
+> setClass("track", representation(x = "numeric", y = "numeric"))
+[1] "track"
+> setMethod("show", "track", function(object) {cat("track:\n"); print(object@x); print(object@y)})
+[1] "show"
+> tr <- new("track", x = 1:3, y = 4:6)    # invisible
+> (tr <- new("track", x = 1:3, y = 4:6))  # visible
+track:
+[1] 1 2 3
+[1] 4 5 6
+> tr             # show it
+track:
+[1] 1 2 3
+[1] 4 5 6
+> show(tr)       # idem
+track:
+[1] 1 2 3
+[1] 4 5 6
+> print(tr)      # This is the same!
+track:
+[1] 1 2 3
+[1] 4 5 6
+> 
+> ## Special characters
+> cat("\ttabs\n")  # \t (tabulation) should indent the text by 4 characters
+	tabs
+> cat("tesg\bt\n") # \b (backspace) erases previous character thus it print "test"
+tesgt
+> alarm()        # idem as cat("\a"), should sound a bip
+> 
+> ## Code parsing and multiline commands
+> log)           # Generate and error
+Erreur : ')' inattendu à log)
+> 1+1; log)      # Should run first instruction before generating the error
+Erreur : ')' inattendu à 1+1; log)
+> # This is a partial line without comments (should issue the continue prompt)
+> log(
++ 10) +
++ 1
+[1] 3.302585
+> 
+> log( # This is partial with comments
++ 10)
+[1] 2.302585
+> 
+> search(); log(
++ 10)
+ [1] ".GlobalEnv"        "tools:RGUI"        "package:stats"    
+ [4] "package:graphics"  "package:grDevices" "package:utils"    
+ [7] "package:datasets"  "package:methods"   "TempEnv"          
+[10] "Autoloads"         "package:base"     
+[1] 2.302585
+> 
+> log(        # Issuing an empty line between instructions
++ 
++ 10)
+[1] 2.302585
+> 
+> # String on several lines
+> text <- "some
++ text"
+> text       # should print "some\ntext"
+[1] "some\ntext"
+> 
+> # Idem, but with single quote
+> text <- 'some
++ text'
+> text       # should print "some\ntext"
+[1] "some\ntext"
+> 
+> # A horrible code with a variable name on two lines (but correct syntax)!
+> `var
++ 1` <- 1
+> `var\n1`
+[1] 1
+> 
+> ## Truncation of very long output
+> options(max.print = 1000)   # Put a lower limit
+> 1:1100       # Should be truncated
+   [1]    1    2    3    4    5    6    7    8    9   10   11   12   13   14
+  [15]   15   16   17   18   19   20   21   22   23   24   25   26   27   28
+  [29]   29   30   31   32   33   34   35   36   37   38   39   40   41   42
+  [43]   43   44   45   46   47   48   49   50   51   52   53   54   55   56
+  [57]   57   58   59   60   61   62   63   64   65   66   67   68   69   70
+  [71]   71   72   73   74   75   76   77   78   79   80   81   82   83   84
+  [85]   85   86   87   88   89   90   91   92   93   94   95   96   97   98
+  [99]   99  100  101  102  103  104  105  106  107  108  109  110  111  112
+ [113]  113  114  115  116  117  118  119  120  121  122  123  124  125  126
+ [127]  127  128  129  130  131  132  133  134  135  136  137  138  139  140
+ [141]  141  142  143  144  145  146  147  148  149  150  151  152  153  154
+ [155]  155  156  157  158  159  160  161  162  163  164  165  166  167  168
+ [169]  169  170  171  172  173  174  175  176  177  178  179  180  181  182
+ [183]  183  184  185  186  187  188  189  190  191  192  193  194  195  196
+ [197]  197  198  199  200  201  202  203  204  205  206  207  208  209  210
+ [211]  211  212  213  214  215  216  217  218  219  220  221  222  223  224
+ [225]  225  226  227  228  229  230  231  232  233  234  235  236  237  238
+ [239]  239  240  241  242  243  244  245  246  247  248  249  250  251  252
+ [253]  253  254  255  256  257  258  259  260  261  262  263  264  265  266
+ [267]  267  268  269  270  271  272  273  274  275  276  277  278  279  280
+ [281]  281  282  283  284  285  286  287  288  289  290  291  292  293  294
+ [295]  295  296  297  298  299  300  301  302  303  304  305  306  307  308
+ [309]  309  310  311  312  313  314  315  316  317  318  319  320  321  322
+ [323]  323  324  325  326  327  328  329  330  331  332  333  334  335  336
+ [337]  337  338  339  340  341  342  343  344  345  346  347  348  349  350
+ [351]  351  352  353  354  355  356  357  358  359  360  361  362  363  364
+ [365]  365  366  367  368  369  370  371  372  373  374  375  376  377  378
+ [379]  379  380  381  382  383  384  385  386  387  388  389  390  391  392
+ [393]  393  394  395  396  397  398  399  400  401  402  403  404  405  406
+ [407]  407  408  409  410  411  412  413  414  415  416  417  418  419  420
+ [421]  421  422  423  424  425  426  427  428  429  430  431  432  433  434
+ [435]  435  436  437  438  439  440  441  442  443  444  445  446  447  448
+ [449]  449  450  451  452  453  454  455  456  457  458  459  460  461  462
+ [463]  463  464  465  466  467  468  469  470  471  472  473  474  475  476
+ [477]  477  478  479  480  481  482  483  484  485  486  487  488  489  490
+ [491]  491  492  493  494  495  496  497  498  499  500  501  502  503  504
+ [505]  505  506  507  508  509  510  511  512  513  514  515  516  517  518
+ [519]  519  520  521  522  523  524  525  526  527  528  529  530  531  532
+ [533]  533  534  535  536  537  538  539  540  541  542  543  544  545  546
+ [547]  547  548  549  550  551  552  553  554  555  556  557  558  559  560
+ [561]  561  562  563  564  565  566  567  568  569  570  571  572  573  574
+ [575]  575  576  577  578  579  580  581  582  583  584  585  586  587  588
+ [589]  589  590  591  592  593  594  595  596  597  598  599  600  601  602
+ [603]  603  604  605  606  607  608  609  610  611  612  613  614  615  616
+ [617]  617  618  619  620  621  622  623  624  625  626  627  628  629  630
+ [631]  631  632  633  634  635  636  637  638  639  640  641  642  643  644
+ [645]  645  646  647  648  649  650  651  652  653  654  655  656  657  658
+ [659]  659  660  661  662  663  664  665  666  667  668  669  670  671  672
+ [673]  673  674  675  676  677  678  679  680  681  682  683  684  685  686
+ [687]  687  688  689  690  691  692  693  694  695  696  697  698  699  700
+ [701]  701  702  703  704  705  706  707  708  709  710  711  712  713  714
+ [715]  715  716  717  718  719  720  721  722  723  724  725  726  727  728
+ [729]  729  730  731  732  733  734  735  736  737  738  739  740  741  742
+ [743]  743  744  745  746  747  748  749  750  751  752  753  754  755  756
+ [757]  757  758  759  760  761  762  763  764  765  766  767  768  769  770
+ [771]  771  772  773  774  775  776  777  778  779  780  781  782  783  784
+ [785]  785  786  787  788  789  790  791  792  793  794  795  796  797  798
+ [799]  799  800  801  802  803  804  805  806  807  808  809  810  811  812
+ [813]  813  814  815  816  817  818  819  820  821  822  823  824  825  826
+ [827]  827  828  829  830  831  832  833  834  835  836  837  838  839  840
+ [841]  841  842  843  844  845  846  847  848  849  850  851  852  853  854
+ [855]  855  856  857  858  859  860  861  862  863  864  865  866  867  868
+ [869]  869  870  871  872  873  874  875  876  877  878  879  880  881  882
+ [883]  883  884  885  886  887  888  889  890  891  892  893  894  895  896
+ [897]  897  898  899  900  901  902  903  904  905  906  907  908  909  910
+ [911]  911  912  913  914  915  916  917  918  919  920  921  922  923  924
+ [925]  925  926  927  928  929  930  931  932  933  934  935  936  937  938
+ [939]  939  940  941  942  943  944  945  946  947  948  949  950  951  952
+ [953]  953  954  955  956  957  958  959  960  961  962  963  964  965  966
+ [967]  967  968  969  970  971  972  973  974  975  976  977  978  979  980
+ [981]  981  982  983  984  985  986  987  988  989  990  991  992  993  994
+ [995]  995  996  997  998  999 1000
+ [ reached getOption("max.print") -- omitted 100 entries ]]
+> options(max.print = NULL)   # Restore default value
+> 
+> ## Errors messages
+> nonExistingVar
+Erreur : objet "nonExistingVar" non trouvé
+> cos("a")
+Error in cos("a") : Argument non numérique pour une fonction mathématique
+> cos(nonExisting)
+Erreur : objet "nonExisting" non trouvé
+> stop("Error!"); 1:3                  # Error in .GlobalEnv (no call info)
+Erreur : Error!
+> (function() stop("Error!"))(); 1:3   # Error; second command not evaluated
+Error in (function() stop("Error!"))() : Error!
+> 
+> ## Warnings handling (a little tricky!)
+> options(warn = -1)      # Do not display warnings
+> {warning("Warn!"); 1:3} # Simple warning
+[1] 1 2 3
+> {warning("Warn!", immediate. = TRUE); 1:3}  # Should issue the warning anyway
+Avis : Warn!
+[1] 1 2 3
+> 
+> options(warn = 0)       # Delay warning display
+> {warning("Warn!"); 1:3} # Simple delayed warning
+[1] 1 2 3
+Message d'avis :
+Warn! 
+> {warning("Warn!", immediate. = TRUE); 1:3} # Do not delay warning
+Avis : Warn!
+[1] 1 2 3
+> for (i in 1:3) {print(i); warning("test")}
+[1] 1
+[1] 2
+[1] 3
+Messages d'avis :
+1: test 
+2: test 
+3: test 
+> for (i in 1:4) {print(i); warning("test", immediate. = (i < 3))}
+[1] 1
+Avis : test
+[1] 2
+Avis : test
+[1] 3
+[1] 4
+Messages d'avis :
+1: test 
+2: test 
+> 
+> options(warn = 1)       # Display warnings immediatelly
+> {warning("Warn!"); 1:3}
+Avis : Warn!
+[1] 1 2 3
+> 
+> options(warn = 2)       # Every warning generates an error
+> {warning("Warn!"); 1:3} # Warning turned into an error
+Erreur : (converti depuis l'avis) Warn!
+> warnings()
+Messages d'avis :
+1: test
+2: test
+> 
+> 
+> ## Warnings inside functions
+> options(warn = -1)
+> (function() {warning("Warn!"); 1:3})()
+[1] 1 2 3
+> options(warn = 0)
+> (function() {warning("Warn!"); 1:3})()
+[1] 1 2 3
+Message d'avis :
+In (function() { ... : Warn! 
+> options(warn = 1)
+> (function() {warning("Warn!"); 1:3})()
+Avis dans (function() { : Warn!
+[1] 1 2 3
+> options(warn = 2)
+> (function() {warning("Warn!"); 1:3})()
+Error in (function() { : (converti depuis l'avis) Warn!
+> 
+> ## Multiple warnings and/or errors (warn = 0 + 9, 10, 11, 49, 50 & 60 warnings)
+> options(warn = 0)
+> for (i in 1:9) warning("Warn ", i)
+Messages d'avis :
+1: Warn 1 
+2: Warn 2 
+3: Warn 3 
+4: Warn 4 
+5: Warn 5 
+6: Warn 6 
+7: Warn 7 
+8: Warn 8 
+9: Warn 9 
+> warnings()      # Redisplay last warnings
+Messages d'avis :
+1: Warn 1
+2: Warn 2
+3: Warn 3
+4: Warn 4
+5: Warn 5
+6: Warn 6
+7: Warn 7
+8: Warn 8
+9: Warn 9
+> for (i in 1:10) warning("Warn ", i)
+Messages d'avis :
+1: Warn 1 
+2: Warn 2 
+3: Warn 3 
+4: Warn 4 
+5: Warn 5 
+6: Warn 6 
+7: Warn 7 
+8: Warn 8 
+9: Warn 9 
+10: Warn 10 
+> warnings()
+Messages d'avis :
+1: Warn 1
+2: Warn 2
+3: Warn 3
+4: Warn 4
+5: Warn 5
+6: Warn 6
+7: Warn 7
+8: Warn 8
+9: Warn 9
+10: Warn 10
+> for (i in 1:11) warning("Warn ", i)
+Il y a eu 11 avis (utilisez warnings() pour les visionner)
+> warnings()
+Messages d'avis :
+1: Warn 1
+2: Warn 2
+3: Warn 3
+4: Warn 4
+5: Warn 5
+6: Warn 6
+7: Warn 7
+8: Warn 8
+9: Warn 9
+10: Warn 10
+11: Warn 11
+> for (i in 1:49) warning("Warn ", i)
+Il y a eu 49 avis (utilisez warnings() pour les visionner)
+> warnings()
+Messages d'avis :
+1: Warn 1
+2: Warn 2
+3: Warn 3
+4: Warn 4
+5: Warn 5
+6: Warn 6
+7: Warn 7
+8: Warn 8
+9: Warn 9
+10: Warn 10
+11: Warn 11
+12: Warn 12
+13: Warn 13
+14: Warn 14
+15: Warn 15
+16: Warn 16
+17: Warn 17
+18: Warn 18
+19: Warn 19
+20: Warn 20
+21: Warn 21
+22: Warn 22
+23: Warn 23
+24: Warn 24
+25: Warn 25
+26: Warn 26
+27: Warn 27
+28: Warn 28
+29: Warn 29
+30: Warn 30
+31: Warn 31
+32: Warn 32
+33: Warn 33
+34: Warn 34
+35: Warn 35
+36: Warn 36
+37: Warn 37
+38: Warn 38
+39: Warn 39
+40: Warn 40
+41: Warn 41
+42: Warn 42
+43: Warn 43
+44: Warn 44
+45: Warn 45
+46: Warn 46
+47: Warn 47
+48: Warn 48
+49: Warn 49
+> for (i in 1:50) warning("Warn ", i)
+Il y a eu 50 avis ou plus (utilisez warnings() pour voir les 50 premiers)
+> warnings()
+Messages d'avis :
+1: Warn 1
+2: Warn 2
+3: Warn 3
+4: Warn 4
+5: Warn 5
+6: Warn 6
+7: Warn 7
+8: Warn 8
+9: Warn 9
+10: Warn 10
+11: Warn 11
+12: Warn 12
+13: Warn 13
+14: Warn 14
+15: Warn 15
+16: Warn 16
+17: Warn 17
+18: Warn 18
+19: Warn 19
+20: Warn 20
+21: Warn 21
+22: Warn 22
+23: Warn 23
+24: Warn 24
+25: Warn 25
+26: Warn 26
+27: Warn 27
+28: Warn 28
+29: Warn 29
+30: Warn 30
+31: Warn 31
+32: Warn 32
+33: Warn 33
+34: Warn 34
+35: Warn 35
+36: Warn 36
+37: Warn 37
+38: Warn 38
+39: Warn 39
+40: Warn 40
+41: Warn 41
+42: Warn 42
+43: Warn 43
+44: Warn 44
+45: Warn 45
+46: Warn 46
+47: Warn 47
+48: Warn 48
+49: Warn 49
+50: Warn 50
+> for (i in 1:60) warning("Warn ", i)
+Il y a eu 50 avis ou plus (utilisez warnings() pour voir les 50 premiers)
+> warnings()
+Messages d'avis :
+1: Warn 1
+2: Warn 2
+3: Warn 3
+4: Warn 4
+5: Warn 5
+6: Warn 6
+7: Warn 7
+8: Warn 8
+9: Warn 9
+10: Warn 10
+11: Warn 11
+12: Warn 12
+13: Warn 13
+14: Warn 14
+15: Warn 15
+16: Warn 16
+17: Warn 17
+18: Warn 18
+19: Warn 19
+20: Warn 20
+21: Warn 21
+22: Warn 22
+23: Warn 23
+24: Warn 24
+25: Warn 25
+26: Warn 26
+27: Warn 27
+28: Warn 28
+29: Warn 29
+30: Warn 30
+31: Warn 31
+32: Warn 32
+33: Warn 33
+34: Warn 34
+35: Warn 35
+36: Warn 36
+37: Warn 37
+38: Warn 38
+39: Warn 39
+40: Warn 40
+41: Warn 41
+42: Warn 42
+43: Warn 43
+44: Warn 44
+45: Warn 45
+46: Warn 46
+47: Warn 47
+48: Warn 48
+49: Warn 49
+50: Warn 50
+> 
+> # warning and then, error message with warn = 0 ("In addition: ...")
+> options(warn = 0)
+> (function() {warning("Warn!"); stop("Error!"); 1:3})()
+Error in (function() { : Error!
+De plus : Message d'avis :
+In (function() { ... : Warn! 
+> options(warn = 1)
+> (function() {warning("Warn!"); stop("Error!"); 1:3})()
+Avis dans (function() { : Warn!
+Error in (function() { : Error!
+> 
+> ## Messages handling
+> {message("A message"); 1:3} # Should issue the message
+A message
+[1] 1 2 3
+> simpleMessage("test")
+<condition: test>
+> simpleMessage("test", call = "me")
+<condition in "me": test>
+> 
+> ## Multiline or very long message
+> options(warning.length = 100)
+> warning("A very long message for my warning that should be truncated or at least flowed on several lines, what does it gives here?")
+Avis : A very long message for my warning that should be truncated or at least flowed on several lines, wha [... truncated]
+> warning("A multiline warning\nSecond line,\nThird line")
+Avis : A multiline warning
+Second line,
+Third line
+> 

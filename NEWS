@@ -1,0 +1,24 @@
+= svSocket News
+
+== Changes in svSocket 0.9-43
+* Polishing package for CRAN submission
+
+== Changes in svSocket 0.9-42
+* Made compatible with R 2.6.x (previous package was R >= 2.7.0).
+
+== Changes in svSocket 0.9-41
+
+* Correction in startSocketServer(): the SocketServerProc function was not
+  protected against garbage collection. Consequently, the socket server stopped
+  working at unpredictable events.
+
+* Correction of a bug preventing processSocket() to display error messages.
+  Instead, I got:
+    Error in ngettext(1, "Error: ", domain = "R") :
+      argument "msg2" is missing, with no default
+
+== Changes in svSocket 0.9-40
+
+This is the first version distributed on R-forge. It is completely refactored
+from older versions (on CRAN since 2003) to make it run with SciViews-K and
+Komodo Edit (Tinn-R is also supported, but not SciViews-R Console any more).

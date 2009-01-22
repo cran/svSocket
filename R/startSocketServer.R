@@ -1,0 +1,207 @@
+"startSocketServer" <-
+function (port = 8888, server.name = "Rserver", procfun = processSocket) {
+    # OK, could be port = 80 to emulate a simple HTML server
+    # This is the main function that starts the server
+    # This function implements a basic R socket server on 'port'
+    # SocketServerProc is the R workhorse function that do the computation
+    # The server is written in Tcl. This way it is not blocking R command-line!
+    # It is designed in a way that R can open simultaneously several ports and
+    # accept connection from multiple clients to each of them.
+    # Commands from each port can be processed differently
+    # For security reasons, this server currently only accepts local connections
+
+    is.function (procfun) || stop("'procfun' must be a function!")
+    # Note: the data send by the client is in the Tcl $::sockMsg variable
+    # Could a clash happen here if multiple clients send data at the
+    # same time to the R socket server???
+    if (!is.numeric(port[1]) || port[1] < 1)
+        stop("'port' must be a positive integer!")
+    portnum <- round(port[1])
+    port <- as.character(portnum)
+
+    if (!is.character(server.name)) stop("'server.name' must be a string!")
+    server.name <- server.name[1]
+
+    # Check if the port is not open yet
+    servers <- getSocketServers()
+    if (port %in% servers) return(TRUE) # This port is already open!
+
+    # We need Tcl to be able to call an R function to process clients' requests
+    "tclProcExists" <- function (proc) {
+		proc <- as.character(proc[1])
+		return(length(as.character(tcl("info", "commands", proc))) == 1)
+    }
+
+    if (!tclProcExists("SocketServerProc")) {
+		# Create the callback when a client sends data
+		"SocketServerProc" <- function () {
+			require(tcltk)
+			# Note: I don't know how to pass arguments here.
+			# So, I use Tcl global variables instead:
+			# - the server port from $::sockPort,
+			# - the socket client from $::sockClient,
+			# - and the message from $::sockMsg
+            "tclGetValue_" <- function (name) {
+				# Get the value stored in a plain Tcl variable
+				if (!is.character(name)) stop("'name' must be a character!")
+
+				# Create a temporary dual variable with tclVar()
+				Temp <- tclVar(init = "")
+
+				# Copy the content of the var of interest to it
+				.Tcl(paste("catch {set ", as.character(Temp), " $", name, "}",
+                    sep = ""))
+
+				# Get the content of the temporary variable
+				Res <- tclvalue(Temp) # Temp is destroyed when function exists
+				return(Res)
+			}
+
+			port <- tclGetValue_("::sockPort")
+			if (port == "") return(FALSE) # The server is closed
+			client <- tclGetValue_("::sockClient")
+			if (client == "") return(FALSE) # The socket client is unknown!
+			msg <- tclGetValue_("::sockMsg")
+			if (msg == "") return(FALSE) # No message!
+
+			# Make sure this message is not processed twice
+			.Tcl("set ::sockMsg {}")
+
+			"TempEnv_" <- function () {
+				pos <-  match("TempEnv", search())
+				if (is.na(pos)) { # Must create it
+					TempEnv <- list()
+					attach(TempEnv, pos = length(search()) - 1)
+					rm(TempEnv)
+					pos <- match("TempEnv", search())
+				}
+				return(pos.to.env(pos))
+			}
+
+			"getTemp_" <- function (x, default = NULL, mode = "any") {
+				if  (exists(x, envir = TempEnv_(), mode = mode,
+						inherits = FALSE)) {
+					return(get(x, envir = TempEnv_(), mode = mode,
+							inherits = FALSE))
+				} else { # Variable not found, return the default value
+					return(default)
+				}
+			}
+
+			# Do we have to debug socket transactions
+			Debug <- getOption("debug.Socket")
+			if (is.null(Debug) || Debug != TRUE) Debug <- FALSE else
+					Debug <- TRUE
+			if (Debug) cat(client, " > ", port, ": ", msg, "\n", sep = "")
+
+			# Function to process the client request: SocketServerProc_<port>
+				proc <- getTemp_(paste("SocketServerProc", port, sep = "_"),
+					mode = "function")
+			if (is.null(proc)) return(FALSE) # The server should be closed
+			# Call this function
+			res <- proc(msg, client, port)
+			# Return result to the client
+			if (res != "") {
+				if (Debug) cat(port, " > ", client, ": ", res, "\n", sep = "")
+				chk <- try(tcl("puts", client, res), silent = TRUE)
+				if (inherits(chk, "try-error")) {
+					warning("Impossible to return results to a disconnected client.")
+					return(FALSE)
+				}
+			}
+			return(TRUE) # The command is processed
+		}
+		# This is a copy of tclFun from tcltk2, to avoid a Depends: tcltk2
+		"tclFun_" <- function (f, name = deparse(substitute(f))) {
+			# Register a simple R function (no arguments) as a callback in Tcl,
+			# and give it the same name)
+			# Indeed, .Tcl.callback(f) in tcltk package does the job...
+			# but it gives cryptic names like R_call 0x13c7168
+			# Done in NAMESPACE
+			#require(tcltk) || stop("Package 'tcltk' is needed!")
+
+			# Check that 'f' is a function with no arguments (not supported)
+			if (!is.function(f)) stop("'f' must be a function!")
+			if (!is.null(formals(f)))
+				stop("The function used cannot (yet) have arguments!")
+			# Make sure the name of the function is valid
+			if (!is.character(name))
+				stop("'name' must be a character string!") else
+				name <- make.names(name[1])
+
+			res <- .Tcl.args(f)
+			# Make sure this is correct (R_call XXXXXXXX)
+			if (length(grep("R_call ", res) > 0)) {
+				# Create a proc with the same name in Tcl
+				.Tcl(paste("proc ", name, " {}", res, sep = ""))
+			}
+			# Return the R_call XXXXXXXX string, as .Tcl.callback() does
+			return(res)
+			# Rem: if you delete the R 'f' function,
+			# the Tcl 'f' function still works (?!)
+		}
+		tclFun_(SocketServerProc)
+    }
+
+    # Copy procfun into TempEnv as SocketServerProc_<port>
+    assign(paste("SocketServerProc", port, sep ="_"), procfun,
+        envir = TempEnv())
+
+    # Create the Tcl function that retrieves data from the socket
+    # (command send by the client), call the processing R function
+    # and returns result to the client
+    cmd <- paste(c(paste("proc  sockHandler_", port, " {sock} {", sep = ""),
+        paste("global Rserver_", port, sep = ""),
+		"if {[eof $sock] == 1 || [catch {gets $sock line}]} {",
+		"    # end of file or abnormal connection drop",
+		"    fileevent $sock readable {}",
+		"    close $sock",
+		paste("    #puts \"Close $Rserver_", port, "($sock)\"", sep = ""),
+		paste("    unset Rserver_", port, "($sock)", sep = ""),
+		"} else {",
+		"    global sockPort",
+		"    global sockClient",
+		"    global sockMsg",
+		paste("    set ::sockPort", port),
+		"    set ::sockClient $sock",
+		"    set ::sockMsg $line",
+		"    SocketServerProc    ;# process the command in R",
+		"}\n}"),
+	collapse = "\n")
+    # if {[gets $sock line] < 0} {return} # To handle incomplete lines!
+    .Tcl(cmd)
+
+    # Create the Tcl function that accepts input from a client
+    # (a different one for each server port)
+    cmd <- paste(c(paste("proc sockAccept_", port, " {sock addr port} {",
+        sep = ""),
+		paste("global Rserver_", port, sep = ""),
+		"# Configure the socket",
+		"fconfigure $sock -buffering line -blocking 0",
+		"# Accept only local clients",
+		"if {$addr != \"127.0.0.1\"} {",
+		" #   puts $sock \"Error: Only local clients allowed!\"",
+		"    close $sock",
+		"    return",
+		"}",
+		paste("set Rserver_", port, "($sock) [list $addr, $port]", sep = ""),
+		paste("fileevent $sock readable [list sockHandler_", port,
+			" $sock] }", sep = "")),
+	collapse = "\n")
+	.Tcl(cmd)
+
+	# Create the socket server itself in Tcl (a different one for each port)
+	.Tcl(paste("set Rserver_", port, "(main) [socket -server sockAccept_",
+		port, " ", port, "]", sep =""))
+
+	# Add this port in the TempEnv variable 'SocketServers'
+	socks <- getSocketServers()
+	namesocks <- names(socks)
+	if (!(portnum %in% socks)) {
+		socks <- c(socks, portnum)
+		names(socks) <- c(namesocks, server.name)
+		socks <- sort(socks)
+		assign("SocketServers", socks, envir = TempEnv())
+	}
+    return(TRUE) # Humm! Only if it succeeds...
+}
