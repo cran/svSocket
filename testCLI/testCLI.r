@@ -14,8 +14,8 @@ Sys.setenv(LANG = "fr_FR.UTF8")
 
 ## Open a clean R session, then, issue these commands and copy/paste the content
 ## of testCLIcmd.r in it... Copy the results from the console into a *.save file
-#require(svSocket) || stop("Package 'svSocket' is required")
-source('/Users/phgrosjean/Documents/Pgm/SciViews/svSocket/R/RSocketServer.r') 
+require(svSocket) || stop("Package 'svSocket' is required")
+#source('/Users/phgrosjean/Documents/Pgm/SciViews/svSocket/R/RSocketServer.R')
 TempEnv_()
 res <- outfile <- out <- i <- cmdfile <- cmd0 <- cmd <- ""
 options(width = 80)
@@ -23,10 +23,10 @@ options(width = 80)
 
 ## Run this to generate output with processSocket()
 setwd('/Users/phgrosjean/Documents/Pgm/SciViews/svSocket/')
-cmdfile <- 'testCLIcmd.r'
+cmdfile <- 'testCLIcmd.R'
 outfile <- 'testCLIcmd.out'
-#require(svSocket) || stop("Package 'svSocket' is required")
-source('/Users/phgrosjean/Documents/Pgm/SciViews/svSocket/R/RSocketServer.r') 
+require(svSocket) || stop("Package 'svSocket' is required")
+#source('/Users/phgrosjean/Documents/Pgm/SciViews/svSocket/R/RSocketServer.R')
 options(width = 80)
 
 # Read the file with commands
@@ -39,7 +39,7 @@ for (i in 1:length(cmd)) {
     cat(cmd[i], "\n", sep = "", file = out)
     if (cmd0 == "") cmd0 <- cmd[i] else
         cmd0 <- paste(cmd0, cmd[i], sep = "<<<n>>>")
-    res <- processSocket(cmd0)
+    res <- processSocket(cmd0, "", "")
     if (res != "+ ") cmd0 <- "" # Not a multipline command
     cat(res, file = out)
 }

@@ -1,8 +1,9 @@
 "sendSocketClients" <-
-function (text, sockets = "all", serverport = 8888) {
+function (text, sockets = "all", serverport = 8888)
+{
     # Note that 'real' clients should manage to print this BEFORE the current
     # command line, something that 'SimpleClient.Tcl' cannot do!
-    
+
     # Make sure that the text ends with a carriage return
     # (same behavior as in Mac R.app but different from RGui!)
     if (regexpr("\n^", text) < 0) text <- paste(text, "\n", sep = "")

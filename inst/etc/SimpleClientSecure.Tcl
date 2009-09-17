@@ -5,8 +5,12 @@
 # (Under Windows, you need to install ActiveTcl8.4 first;
 # see http://www.activestate.com/Products/ActiveTcl/)
 
+# We use a TLS secure layer to communicate with the server
+package require tls
+# Start R socket server with  startSocketServer(secure = TRUE)
+
 # These are parameters of the R socket server
-set rsHost "localhost"	;# localhost only (take care of security otherwise!)
+set rsHost "localhost"	;# localhost for example, but could be distant machine
 set rsPort 8888		;# port is arbitrarily fixed at 8888 for the R server
 
 # Read data from a channel (the R socket server) and put it into stdout
@@ -50,7 +54,7 @@ proc read_stdin {wsock} {
 # this is a synchronous connection:
 # The command does not return until the server responds to the
 # connection request
-set rsSock [socket $rsHost $rsPort]
+set rsSock [tls::socket $rsHost $rsPort]
 
 if {[eof $rsSock] == 1} {
 	close $rsSock		;# connection closed ... abort

@@ -1,10 +1,52 @@
 = svSocket News
 
+== Changes in svSocket 0.9-48
+
+* svTaskCallbackManager() added to allow callbacks to be executed after each
+  (complete) R code send by a client to the server, as well as, any top-level
+  task run at the R console.
+
+
+== Changes in svSocket 0.9-47
+
+* The server now calls taskCallbacks on non-hidden mode after code evaluation
+
+
+== Changes in svSocket 0.9-46
+
+* evalServer() slightly reworked
+
+* sendSocketServer() eliminated (superseeded by evalServer())
+
+
+== Changes in svSocket 0.9-45
+
+* Bug correction in evalServer()
+
+
+== Changes in svSocket 0.9-44
+
+* Added function evalServer() for R interprocess communication using this R
+  socket server mechanism
+
+
 == Changes in svSocket 0.9-43
+
+* Example added in processSocket(), implementing a simple REPL
+
+* A new function, sendSocketServer() is added to send and evaluate commands from
+  one R instance (client) to another one (a R socket server)
+
+
+== Changes in svSocket 0.9-43
+
 * Polishing package for CRAN submission
 
+
 == Changes in svSocket 0.9-42
+
 * Made compatible with R 2.6.x (previous package was R >= 2.7.0).
+
 
 == Changes in svSocket 0.9-41
 
@@ -16,6 +58,7 @@
   Instead, I got:
     Error in ngettext(1, "Error: ", domain = "R") :
       argument "msg2" is missing, with no default
+
 
 == Changes in svSocket 0.9-40
 

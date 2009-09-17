@@ -1,5 +1,7 @@
 "startSocketServer" <-
-function (port = 8888, server.name = "Rserver", procfun = processSocket) {
+function (port = 8888, server.name = "Rserver", procfun = processSocket,
+secure = FALSE, local = !secure)
+{
     # OK, could be port = 80 to emulate a simple HTML server
     # This is the main function that starts the server
     # This function implements a basic R socket server on 'port'
@@ -8,7 +10,14 @@ function (port = 8888, server.name = "Rserver", procfun = processSocket) {
     # It is designed in a way that R can open simultaneously several ports and
     # accept connection from multiple clients to each of them.
     # Commands from each port can be processed differently
-    # For security reasons, this server currently only accepts local connections
+
+	# Secure server requires the tcl-tls package!
+	if (isTRUE(secure)) {
+		# On Mac with AquaTclTk installed, I need: addTclPath("/System/Library/Tcl")
+		res <- tclRequire("tls")
+		if (!inherits(res, "tclObj"))
+			stop("You must install the tcl-tls package for using a secure server!")
+	}
 
     is.function (procfun) || stop("'procfun' must be a function!")
     # Note: the data send by the client is in the Tcl $::sockMsg variable
@@ -34,8 +43,9 @@ function (port = 8888, server.name = "Rserver", procfun = processSocket) {
 
     if (!tclProcExists("SocketServerProc")) {
 		# Create the callback when a client sends data
-		"SocketServerProc" <- function () {
-			require(tcltk)
+		"SocketServerProc" <- function ()
+		{
+			#require(tcltk)
 			# Note: I don't know how to pass arguments here.
 			# So, I use Tcl global variables instead:
 			# - the server port from $::sockPort,
@@ -67,7 +77,8 @@ function (port = 8888, server.name = "Rserver", procfun = processSocket) {
 			# Make sure this message is not processed twice
 			.Tcl("set ::sockMsg {}")
 
-			"TempEnv_" <- function () {
+			"TempEnv_" <- function ()
+			{
 				pos <-  match("TempEnv", search())
 				if (is.na(pos)) { # Must create it
 					TempEnv <- list()
@@ -78,7 +89,8 @@ function (port = 8888, server.name = "Rserver", procfun = processSocket) {
 				return(pos.to.env(pos))
 			}
 
-			"getTemp_" <- function (x, default = NULL, mode = "any") {
+			"getTemp_" <- function (x, default = NULL, mode = "any")
+			{
 				if  (exists(x, envir = TempEnv_(), mode = mode,
 						inherits = FALSE)) {
 					return(get(x, envir = TempEnv_(), mode = mode,
@@ -112,7 +124,8 @@ function (port = 8888, server.name = "Rserver", procfun = processSocket) {
 			return(TRUE) # The command is processed
 		}
 		# This is a copy of tclFun from tcltk2, to avoid a Depends: tcltk2
-		"tclFun_" <- function (f, name = deparse(substitute(f))) {
+		"tclFun_" <- function (f, name = deparse(substitute(f)))
+		{
 			# Register a simple R function (no arguments) as a callback in Tcl,
 			# and give it the same name)
 			# Indeed, .Tcl.callback(f) in tcltk package does the job...
@@ -173,26 +186,55 @@ function (port = 8888, server.name = "Rserver", procfun = processSocket) {
 
     # Create the Tcl function that accepts input from a client
     # (a different one for each server port)
-    cmd <- paste(c(paste("proc sockAccept_", port, " {sock addr port} {",
-        sep = ""),
-		paste("global Rserver_", port, sep = ""),
-		"# Configure the socket",
-		"fconfigure $sock -buffering line -blocking 0",
-		"# Accept only local clients",
-		"if {$addr != \"127.0.0.1\"} {",
-		" #   puts $sock \"Error: Only local clients allowed!\"",
-		"    close $sock",
-		"    return",
-		"}",
-		paste("set Rserver_", port, "($sock) [list $addr, $port]", sep = ""),
-		paste("fileevent $sock readable [list sockHandler_", port,
-			" $sock] }", sep = "")),
-	collapse = "\n")
+	# Code is slightly different if the server is only local or not
+	if (isTRUE(local)) {
+		cmd <- paste(c(paste("proc sockAccept_", port, " {sock addr port} {",
+			sep = ""),
+			paste("global Rserver_", port, sep = ""),
+			"# Configure the socket",
+			"fconfigure $sock -buffering line -blocking 0",
+			"# Accept only local clients",
+			"if {$addr != \"127.0.0.1\"} {",
+			" #   puts $sock \"Error: Only local clients allowed!\"",
+			"    close $sock",
+			"    return",
+			"}",
+			paste("set Rserver_", port, "($sock) [list $addr, $port]", sep = ""),
+			paste("fileevent $sock readable [list sockHandler_", port,
+				" $sock] }", sep = "")),
+		collapse = "\n")
+	} else {
+		cmd <- paste(c(paste("proc sockAccept_", port, " {sock addr port} {",
+			sep = ""),
+			paste("global Rserver_", port, sep = ""),
+			"# Configure the socket",
+			"fconfigure $sock -buffering line -blocking 0",
+			paste("set Rserver_", port, "($sock) [list $addr, $port]", sep = ""),
+			paste("fileevent $sock readable [list sockHandler_", port,
+				" $sock] }", sep = "")),
+		collapse = "\n")
+	}
 	.Tcl(cmd)
 
 	# Create the socket server itself in Tcl (a different one for each port)
-	.Tcl(paste("set Rserver_", port, "(main) [socket -server sockAccept_",
-		port, " ", port, "]", sep =""))
+	# If we want a secure server, use the tls secured socket instead
+	if (isTRUE(secure)) {
+		.Tcl(paste("set Rserver_", port, "(main) [tls::socket -server sockAccept_",
+			#port, " -require 1 -cafile caPublic.pem -certfile ~/serverR.pem ",
+			port, " -certfile Rserver.pem -keyfile Rserver.pem -ssl2 1 -ssl3 1 -tls1 0 -require 0 -request 0 ",
+			port, "]", sep =""))
+			# For client, use:
+			# set chan [tls::socket -cafile caPublic.pem -certfile ~/clientR.pem server.site.net $port]
+			# To generate the keys:
+			# cd ~
+			# Copy /System/Library/OpenSSL/openssl.cnf on ~, and edit
+			# openssl genrsa -out serverR.pem 1024   # use -des3 to secure with a password
+			# openssl req -new -x509 -key serverR.pem -out clientR.pem -days 365 -config openssl.cnf
+			# ... and answer to a couple of questions
+	} else {
+		.Tcl(paste("set Rserver_", port, "(main) [socket -server sockAccept_",
+			port, " ", port, "]", sep =""))
+	}
 
 	# Add this port in the TempEnv variable 'SocketServers'
 	socks <- getSocketServers()

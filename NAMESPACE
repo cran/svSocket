@@ -1,6 +1,7 @@
-import(tcltk)
+import(tcltk, svMisc)
 
-export(getSocketClients,
+export(evalServer,
+	   getSocketClients,
        getSocketClientsNames,
        getSocketServerName,
        getSocketServers,
@@ -9,4 +10,5 @@ export(getSocketClients,
        sendSocketClients,
        closeSocketClients,
        startSocketServer,
-       stopSocketServer)
+       stopSocketServer,
+	   svTaskCallbackManager)

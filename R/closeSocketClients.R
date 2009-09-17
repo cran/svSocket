@@ -1,5 +1,6 @@
 "closeSocketClients" <-
-function (sockets = "all", serverport = 8888) {
+function (sockets = "all", serverport = 8888)
+{
     # Nicely close socket client(s) by sending "\f"
     # To be interpreted by a compatible client that manages to close connection
     if (sockets == "all")

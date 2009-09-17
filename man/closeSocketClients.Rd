@@ -8,7 +8,7 @@
   further process on their side). This function is used by \code{\link{stopSocketServer}},
   but it can also be invoked manually to ask for disconnection of a particular client.
   Note that, in this case, the client still can decide not to disconnect! The code
-  send to ask for client disconnection is: \code{\b}.
+  send to ask for client disconnection is: \code{\\f}.
 }
 
 \usage{

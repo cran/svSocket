@@ -1,8 +1,9 @@
 "processSocket" <-
-function (msg, socket, serverport, ...) {
+function (msg, socket, serverport, ...)
+{
     # This is the default R function that processes a command send by a socket
     # client. 'msg' is assumed to be R code contained in a string
-    
+
     # Do we receive a <<<id=myID>>> sequence?
 	if (regexpr("^<<<id=[a-zA-Z0-9]+>>>", msg) > 0) {
 		# get the identifier
@@ -13,19 +14,19 @@ function (msg, socket, serverport, ...) {
 		# The client name is simply the socket name
 		client <- socket
 	}
-	
+
 	# Do we receive <<<esc>>>? => break (currently, only break multiline mode)
     if (substr(msg, 1, 9) == "<<<esc>>>") {
         pars <- parSocket(client, serverport, code = "") # Reset multiline code
         msg <- substr(msg, 10, 1000000)
     }
-	
+
     # Replace <<<n>>> by \n (for multiline code)
     msg <- gsub("<<<n>>>", "\n", msg)
-    
+
     # Replace <<<s>>> by the corresponding client identifier and server port
     msg <- gsub("<<<s>>>", paste('"', client, '", ', serverport, sep = ""), msg)
-    
+
     hiddenMode <- FALSE
 	returnResults <- TRUE
 	# If msg starts with <<<Q>>> or <<<q>>>, then disconnect server before or
@@ -44,7 +45,7 @@ function (msg, socket, serverport, ...) {
         parSocket(client, serverport, last = "\n\f")
     } else if (startmsg == "<<<e>>>") {
         msg <- substr(msg, 8, 1000000)
-        # We just configure the server correctly        
+        # We just configure the server correctly
         parSocket(client, serverport, bare = FALSE, echo = TRUE,
 			prompt = ":> ", continue = ":+ ",
             multiline = TRUE, last = "\n\f")
@@ -52,21 +53,28 @@ function (msg, socket, serverport, ...) {
         #timestamp("my R command", "", "", quiet = TRUE)
     } else if (startmsg == "<<<h>>>") {
 		msg <- substr(msg, 8, 1000000)
+		# Do not echo command on the server (silent execution)
 		hiddenMode <- TRUE
 		parSocket(client, serverport, bare = TRUE, last = "\n\f")
     } else if (startmsg == "<<<H>>>") {
 		msg <- substr(msg, 8, 1000000)
-		# Indicate to the client that he can disconnect now
+		# Do not echo command on the server (silent execution with no return)
         closeSocketClients(sockets = socket, serverport = serverport)
 		hiddenMode <- TRUE
 		returnResults <- FALSE
 		parSocket(client, serverport, bare = TRUE)
+	} else if (startmsg == "<<<u>>>") {
+		msg <- substr(msg, 8, 1000000)
+		# Silent execution, nothing is returned to the client (but still echoed to the server)
+		hiddenMode <- FALSE
+		returnResults <- FALSE
+		parSocket(client, serverport, bare = TRUE)
 	}
-    
+
     # Get parameters for the client
     pars <- parSocket(client, serverport)
     if (Bare <- pars$bare) {
-        Prompt <- "" 
+        Prompt <- ""
         Continue <- ""
         Echo <- FALSE
     } else {
@@ -83,7 +91,7 @@ function (msg, socket, serverport, ...) {
 		msg <- paste(pars$code, msg, sep = "\n")
 		pars$code <- ""	# This changes the original data too!
 	}
-	
+
     # Parse the R code
     expr <- Parse(msg)
     # Is it a wrong code?
@@ -97,15 +105,15 @@ function (msg, socket, serverport, ...) {
     if (!is.expression(expr)) {
         # Is multiline mode allowed?
         if (!Bare && pars$multiline) {
-            pars$code <- msg    
+            pars$code <- msg
             if (returnResults) {
 				return(paste(pars$last, Continue, sep = ""))
 			} else return("")
-        } else {    # Multimode not allowed    
+        } else {    # Multimode not allowed
             res <- paste(gettext("Error: incomplete command in single line mode"),
                 "\n", sep = "")
             if (Echo) cat(res)
-			if (returnResults) {    
+			if (returnResults) {
 				return(paste(res, pars$last, Prompt, sep = ""))
 			} else return("")
         }
@@ -116,6 +124,11 @@ function (msg, socket, serverport, ...) {
     if (length(expr) < 1) return(paste(pars$last, Prompt, sep = ""))
     # Correct code,... we evaluate it
     results <- captureAll(expr)
+	# Should we run taskCallbacks?
+	if (!hiddenMode) {
+		h <- getTemp(".svTaskCallbackManager", default = NULL, mode = "list")
+		if (!is.null(h)) h$evaluate()
+	}
     # Collapse and add last and the prompt at the end
     results <- paste(results, collapse = "\n")
     if (Echo) cat(results)

@@ -1,11 +1,13 @@
 "getSocketServers" <-
-function () {
+function ()
+{
     # Get the list of currently running socket servers
     return(TempEnv()$SocketServers)
 }
 
 "getSocketClients" <-
-function (port = 8888) {
+function (port = 8888)
+{
     if (!is.numeric(port[1]) || port[1] < 1)
         stop("'port' must be a positive integer!")
     portnum <- round(port[1])
@@ -20,10 +22,10 @@ function (port = 8888) {
     clients <- as.character(.Tcl(paste("array names Rserver", port, sep = "_")))
     # Eliminate "main", which is the connection socket
     clients <- clients[clients != "main"]
-	
+
     # Are there client connected?
     if (length(clients) == 0) return(character(0))
-	
+
     # For each client, retrieve its address and port
     addresses <- NULL
     arrayname <- paste("Rserver", port, sep = "_")
@@ -40,7 +42,8 @@ function (port = 8888)
     names(getSocketClients(port = port))
 
 "getSocketServerName" <-
-function (port = 8888) {
+function (port = 8888)
+{
     if (!is.numeric(port[1]) || port[1] < 1)
         stop("'port' must be a positive integer!")
     portnum <- round(port[1])

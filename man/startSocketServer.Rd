@@ -14,7 +14,8 @@
 }
 
 \usage{
-startSocketServer(port = 8888, server.name = "Rserver", procfun = processSocket)
+startSocketServer(port = 8888, server.name = "Rserver", procfun = processSocket,
+secure = FALSE, local = !secure)
 stopSocketServer(port = 8888)
 }
 
@@ -23,6 +24,10 @@ stopSocketServer(port = 8888)
   \item{server.name}{ The internal name of this server }
   \item{procfun}{ The function to use to process client's commands. By default,
     it is \code{processSocket()}. }
+  \item{secure}{ Do we start a secure (TLS) server? (not implemented yet) }
+  \item{local}{ If \code{TRUE}, accept only connections from local clients, i.e.,
+    from clients with IP address 127.0.0.1. Set by default if the server is not
+    secure. }
 }
 
 \details{
@@ -37,7 +42,7 @@ stopSocketServer(port = 8888)
 \note{ This server is currently synchronous in the processing of the command.
   However, neither R, nor the client are blocked during exchange of data
   (communication is asynchronous).
-  
+
   Note also that socket numbers are reused, and corresponding configurations
   are not deleted from one connection to the other. So, it is possible for
   a client to connect/disconnect several times and continue to work with the

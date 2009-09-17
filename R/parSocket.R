@@ -1,5 +1,6 @@
 "parSocket" <-
-function (client, serverport = 8888, ...) {
+function (client, serverport = 8888, ...)
+{
     # Set or get parameters for a given socket client
     # No attempt is made to make sure this client exists
     sc <- paste("SocketClient", client, sep = "_")
@@ -23,7 +24,7 @@ function (client, serverport = 8888, ...) {
         assign(sc, e, envir = TempEnv())
     } else e <- get(sc, envir = TempEnv(), mode = "environment")
     # Change or add parameters if they are provided
-    args <- list(...) 
+    args <- list(...)
     if (l <- length(args)) {
         change.par <- function (x, val, env) {
             if (is.null(x)) return(FALSE)    # Do nothing without a valid name
@@ -36,7 +37,7 @@ function (client, serverport = 8888, ...) {
         }
         n <- names(args)
         res <- rep(TRUE, l)
-        for (i in seq_len(l)) res[i] <- change.par(n[i], args[[i]], e) 
+        for (i in seq_len(l)) res[i] <- change.par(n[i], args[[i]], e)
         if (any(!res)) warning("Non named arguments are ignored")
     }
     # Return e invisibly
