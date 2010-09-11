@@ -21,19 +21,19 @@ svTaskCallbackManager(handlers = list(), registered = FALSE, verbose = FALSE)
 }
 
 \arguments{
-  \item{handlers}{ This can be a list of callbacks in which each element is a
+  \item{handlers}{ this can be a list of callbacks in which each element is a
     list with an element named \code{f} which is a callback function, and an
 	optional element named \code{data} which is the 5-th argument to be supplied
 	to the callback when it is invoked. Typically this argument is not
 	specified, and one uses add to register callbacks after the manager is
 	created. }
-  \item{registered}{ A logical value indicating whether the \code{evaluate}
+  \item{registered}{ a logical value indicating whether the \code{evaluate}
     function has already been registered with the internal task callback
 	mechanism. This is usually \code{FALSE} and the first time a callback is
 	added via the add function, the evaluate function is automatically
 	registered. One can control when the function is registered by specifying
 	\code{TRUE} for this argument and calling \code{addTaskCallback()} manually. }
-  \item{verbose}{ A logical value, which if \code{TRUE}, causes information to
+  \item{verbose}{ a logical value, which if \code{TRUE}, causes information to
     be printed to the console about certain activities this dispatch manager
 	performs. This is useful for debugging callbacks and the handler itself. }
 }
@@ -42,8 +42,11 @@ svTaskCallbackManager(handlers = list(), registered = FALSE, verbose = FALSE)
   See \code{?taskCallbackManager} for both the returned object and how to use it.
 }
 
-\author{Slightly modified from the original function by the R core team}
+\author{Slightly modified from the original R core team's function by
+  Ph. Grosjean <phgrosjean@sciviews.org>}
 
 \seealso{ \code{\link[base]{taskCallbackManager}}, \code{\link{processSocket}} }
 
 \keyword{ IO }
+
+\concept{ task callback }

@@ -1,7 +1,7 @@
 \name{getSocketServers}
 \alias{getSocketServers}
 
-\title{ Get the ports of current R socket servers. }
+\title{ Get the ports of current R socket servers }
 \description{
   Returns a list with all the ports of currently running R socket servers.
 }
@@ -22,3 +22,5 @@ getSocketServers()
 
 \keyword{ IO }
 \keyword{ utilities }
+
+\concept{ stateful socket server interprocess communication }

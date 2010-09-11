@@ -1,8 +1,9 @@
-svTaskCallbackManager <-
-function (handlers = list(), registered = FALSE, verbose = FALSE) 
+svTaskCallbackManager <- function (handlers = list(), registered = FALSE,
+verbose = FALSE) 
 {
     suspended <- FALSE
     .verbose <- verbose
+    
     add <- function(f, data = NULL, name = NULL, register = TRUE) {
         if (is.null(name)) 
             name <- as.character(length(handlers) + 1L)
@@ -14,6 +15,7 @@ function (handlers = list(), registered = FALSE, verbose = FALSE)
         }
         name
     }
+    
     remove <- function(which) {
         if (is.character(which)) {
             tmp <- (1L:length(handlers))[!is.na(match(which, 
@@ -27,6 +29,7 @@ function (handlers = list(), registered = FALSE, verbose = FALSE)
         handlers <<- handlers[-which]
         return(TRUE)
     }
+    
     evaluate <- function(expr, value, ok, visible) {
         if (suspended) 
             return(TRUE)
@@ -54,9 +57,11 @@ function (handlers = list(), registered = FALSE, verbose = FALSE)
         }
         return(TRUE)
     }
+    
     suspend <- function(status = TRUE) {
         suspended <<- status
     }
+    
     register <- function(name = "SV-taskCallbackManager", verbose = .verbose) {
         if (verbose) 
             cat(gettext("Registering evaluate as low-level callback\n"))
@@ -64,6 +69,7 @@ function (handlers = list(), registered = FALSE, verbose = FALSE)
         registered <<- TRUE
         id
     }
+    
     list(add = add, evaluate = evaluate, remove = remove, register = register, 
         suspend = suspend, callbacks = function() handlers)
 }

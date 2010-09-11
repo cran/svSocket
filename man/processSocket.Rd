@@ -1,7 +1,7 @@
 \name{processSocket}
 \alias{processSocket}
 
-\title{ The function that processes a command coming from the socket. }
+\title{ The function that processes a command coming from the socket }
 
 \description{
   This is the default R function called each time data is send by a client
@@ -14,12 +14,12 @@ processSocket(msg, socket, serverport, ...)
 }
 
 \arguments{
-  \item{msg}{ The message send by the client, to be processed. }
-  \item{socket}{ The client socket identifier, as in \code{getSocketClients()}.
+  \item{msg}{ the message send by the client, to be processed. }
+  \item{socket}{ the client socket identifier, as in \code{getSocketClients()}.
     This is passed by the calling function and can be used internally. }
-  \item{serverport}{ The port on which the server is running, this is passed
+  \item{serverport}{ the port on which the server is running, this is passed
     by the calling function and can be used internally. }
-  \item{\dots}{ Anything you want to pass to \code{processSocket()}, but it
+  \item{\dots}{ anything you want to pass to \code{processSocket()}, but it
     needs to rework \code{startServerSocket()} to use it). }
 }
 
@@ -78,7 +78,7 @@ processSocket(msg, socket, serverport, ...)
 
 \examples{
 \dontrun{
-# A simple REPL (R eval/process loop) using basic features of processSocket()
+## A simple REPL (R eval/process loop) using basic features of processSocket()
 repl <- function ()
 {
 	pars <- parSocket("repl", "", bare = FALSE)  # Parameterize the loop
@@ -94,3 +94,5 @@ repl()
 }
 
 \keyword{ IO }
+
+\concept{ stateful socket server interprocess communication }

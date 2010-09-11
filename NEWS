@@ -1,5 +1,33 @@
 = svSocket News
 
+== Changes in svSocket 0.9-50
+
+* processSocket() now calls parseText() from svMisc >= 0.9-60 instead of Parse().
+
+* When Echo is TRUE and we are not in hidden mode, results are echoed directly
+  in the R console as they are available, and not any more at the end of the
+  calculation.
+  
+* A new type of connection is added: a 'sockclientconn' that allows to redirect
+  output (append or write-only, for the moment) to a SciViews socket client. It
+  is created by using socketClientConnection() and has a specific summary()
+  method. It inherits from a 'sockconn' object and should behave similarly.
+  
+* parSocket() has a new argument, clientsocket, that allows to pass the Tcl name
+  of the client's socket. This is required to use socketClientConnection() by
+  providing only the client's name (and thus, the required Tcl socket name is
+  obtained through the property parSocket(....)$clientsocket, if it was
+  previously recorded). The default process function, processSocket() is changed
+  to record the Tcl socket in parSocket() each time a client connects to the
+  server and sends its first command through it.
+
+
+== Changes in svSocket 0.9-49
+
+* Small change in startSocketServer(): the Tcl/Tk callback function now calls
+  a closure located in TempEnv (SocketServerProc).
+
+
 == Changes in svSocket 0.9-48
 
 * svTaskCallbackManager() added to allow callbacks to be executed after each

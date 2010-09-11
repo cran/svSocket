@@ -1,34 +1,34 @@
 = svSocket To Do list
 
-* svSocket-package.Rd man page
+* Rework the mechanism to add history item to R from within Komodo.
 
 * Easy redefinition of options(width = ...) to adjust width of output to the
-  GUI client R console
+  GUI client R console.
 
 * Make use of a config file for the server + parSocketServer() to change (some!)
-  parameters of the server
+  parameters of the server.
 
-* Translation of all messages in the package
+* Translation of all messages in the package.
 
 * Delete SocketClient_xxxx on disconnection + make sure they are all deleted
-  on server stopping and on package detaching (in .Last.lib())
+  on server stopping and on package detaching (in .Last.lib()).
 
-* Parse error => rework message a little bit + line number is 1 too much
+* Parse error => rework message a little bit + line number is 1 too much.
 
 * sourcePart() function sourcing only from line X to line Y in a file!
 
-* Send a command to the regular command line
+* Send a command to the regular command line.
 
-* Silent mode (interesting with echo = TRUE)
+* Silent mode (interesting with echo = TRUE).
 
-* Correct little glitches with multiline mode and empty lines
+* Correct little glitches with multiline mode and empty lines.
 
-* A mode that flags various parts of output
+* A mode that flags various parts of output.
 
 * Parse and executes one command at a time in case several commands are send at
-  once (should we? The current way of working has some interesting features!)
+  once (should we? The current way of working has some interesting features!).
 
-* Unattended messages should be printed above command line
+* Unattended messages should be printed above command line.
 
 * Allow for remote connection + security?
   Use a tcl list:
@@ -51,22 +51,20 @@
 
 * Correct handling of the prompt when several lines of code are pasted at once!
 
-* Currently, code send through the socket server cannt be interrupted
+* Currently, code send through the socket server cannot be interrupted.
 
-* Implement a way to interrupt from the remote console + correct <<<esc>>>
+* Implement a way to interrupt from the remote console + correct <<<esc>>>.
 
 * Manage buffered output with flush.console()!
 
-* Redirect stdin() so that scan(), etc. work (+ browser(), etc.)
+* Redirect stdin() so that scan(), etc. work (+ browser(), etc.).
 
-* define a maximum number of lines to return
+* For multiline commands, do number them.
 
-* For multiline commands, do number them
-
-* <<<E>>> with addition of the command in the R command history
+* <<<E>>> with addition of the command in the R command history.
 
 * Check and solve possible clash when several clients submit commands at the
-  same time
+  same time.
 
 
 == Differences between CLI and processSocket()
@@ -77,11 +75,11 @@ Tested with R 2.6.1 and testCLIcmd.r v. 1.0-0
 	> search(); log(
   processSocket() waits for a complete last command before processing everything
   while other consoles process all the commands and then wait for last one to be
-  completed (should be considered as a feature)
+  completed (should be considered as a feature).
 
 * Same problem with multiple instructions send at once when there is an error:
   the first few correct instructions before the error should be evaluated, while
-  they are not with processSocket() (considered as a feature). Compare this
+  they are not with processSocket() (considered as a feature). Compare this:
 	> search(); log)
 
 * For long calculations, processSocket() acts as a buffered console (like RGui)
@@ -95,11 +93,11 @@ Tested with R 2.6.1 and testCLIcmd.r v. 1.0-0
 * There are slight differences in the way the error message is presented when
   incorrect code is processed. Moreover, R.app (Macintosh) does not print a
   descriptive error message, but only "syntax error". This is an old behaviour
-  that remains only in R.app (among all tested consoles)
+  that remains only in R.app (among all tested consoles).
 
 * R.app (Macintosh) always print prompts at the beginning of a line. So,
   cat("text") does not produce exactly the same result as in many other consoles
-  including with processSocket() (should be considered wrong in R.app!)
+  including with processSocket() (should be considered wrong in R.app!).
 
 * R.app (Macintosh) incorrectly prints a continuation prompt after:
 	> options(warn = 2)
@@ -118,7 +116,7 @@ Tested with R 2.6.1 and testCLIcmd.r v. 1.0-0
   a question mark instead.
 
 * Regarding internationalization of error messages, there are two differences
-  between messages at the CLI and issued by processSocket():
+  between messages at the CLI and issued by processSocket().
 
 * Warning message(s): is not translated at CLI bu it is translated by
   processSocket() (bug?) in:
@@ -131,7 +129,7 @@ Tested with R 2.6.1 and testCLIcmd.r v. 1.0-0
 
 * If you define options(warning.expression), there will be a problem because
   processSocket() redefines it also, and thus, at best, you expression is
-  ignored (must fix this!)
+  ignored (must fix this!).
 
 * On the MacOS X, there are many mismatches for string translation, bot at the
   command line and using processSocket(), but they are not same mismatches!

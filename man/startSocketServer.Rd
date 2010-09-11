@@ -2,7 +2,7 @@
 \alias{startSocketServer}
 \alias{stopSocketServer}
 
-\title{ Start and stop a R socket server. }
+\title{ Start and stop a R socket server }
 
 \description{
   A R socket server is listening for command send by clients to a TCP port.
@@ -15,17 +15,17 @@
 
 \usage{
 startSocketServer(port = 8888, server.name = "Rserver", procfun = processSocket,
-secure = FALSE, local = !secure)
+    secure = FALSE, local = !secure)
 stopSocketServer(port = 8888)
 }
 
 \arguments{
-  \item{port}{ The TCP port of the R socket server }
-  \item{server.name}{ The internal name of this server }
-  \item{procfun}{ The function to use to process client's commands. By default,
+  \item{port}{ the TCP port of the R socket server. }
+  \item{server.name}{ the internal name of this server. }
+  \item{procfun}{ the function to use to process client's commands. By default,
     it is \code{processSocket()}. }
-  \item{secure}{ Do we start a secure (TLS) server? (not implemented yet) }
-  \item{local}{ If \code{TRUE}, accept only connections from local clients, i.e.,
+  \item{secure}{ do we start a secure (TLS) server? (not implemented yet) }
+  \item{local}{ if \code{TRUE}, accept only connections from local clients, i.e.,
     from clients with IP address 127.0.0.1. Set by default if the server is not
     secure. }
 }
@@ -48,16 +48,19 @@ stopSocketServer(port = 8888)
   a client to connect/disconnect several times and continue to work with the
   same configuration (in particular, the multiline code submitted line by
   line) if every command starts with \code{<<<id=myID>>>} where \code{myID} is
-  an alphanumeric (unique) identifier. Take care! The R server never checks
-  uniqueness of this identifier. You are responsible to use one that would not
-  class with other, concurrent, clients on this server.
+  an alphanumeric (unique) identifier. This property is call a stateful server.
+  Take care! The R server never checks uniqueness of this identifier. You are
+  responsible to use one that would not intefere with other, concurrent, clients
+  connected to the same server.
 
   For trials and basic testings of the R socket server, you can use the Tcl
   script SimpleClient.Tcl. See the ReadMe.txt file in the /etc/ subdirectory
   of the svSocket package folder. Also, in the source of the svSocket package
-  you will find testCLI.r, a script to torture test CLI for R (console).
+  you will find testCLI.R, a script to torture test CLI for R (console).
 }
 
 \seealso{ \code{\link{processSocket}} }
 
 \keyword{ IO }
+
+\concept{ stateful socket server interprocess communication }

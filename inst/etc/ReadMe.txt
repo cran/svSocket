@@ -19,7 +19,7 @@ $ tclsh SimpleClient.tcl.
 Follow instructions: you can type R commands in the console of the client
 application and R returns the results of the calculation. You have no command
 line edition, and no command history, but you can test various R commands
-by typing then in the client or pasting them one by one.
+by typing them in the client or pasting them one by one.
 
 To get something closer to a real console, you should display the prompt and
 enable multiline mode. You achieve this by configuring the client with:

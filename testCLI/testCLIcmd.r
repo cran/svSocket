@@ -1,7 +1,7 @@
-# CLI torture test, copyright (c) Ph. Grosjean (phgrosjean@sciviews.org)
-# GNU GPL => 2 license
-# A series of commands to check for R CLI (or console widget)
-# Version 1.0-0
+## CLI torture test, copyright (c) Ph. Grosjean (phgrosjean@sciviews.org)
+## GNU GPL => 2 license
+## A series of commands to check for R CLI (or console widget)
+## Version 1.0-0
 
 ## Simple instructions
 1+1            # Simple command with one line of output
@@ -22,7 +22,7 @@ for (i in 1:3) print(i)  # Output within a loop
 for (i in 1:3) i  # Do not explicit use print(), so output nothing
 
 cat("test\n")  # Simple text print with carriage return
-cat("test")         # Idem, but without carriage return
+cat("test")    # Idem, but without carriage return
 
 ## S4 objects
 setClass("track", representation(x = "numeric", y = "numeric"))
@@ -41,32 +41,32 @@ alarm()        # idem as cat("\a"), should sound a bip
 ## Code parsing and multiline commands
 log)           # Generate and error
 1+1; log)      # Should run first instruction before generating the error
-# This is a partial line without comments (should issue the continue prompt)
+## This is a partial line without comments (should issue the continue prompt)
 log(
 10) +
 1
 
-log( # This is partial with comments
+log(          # This is partial with comments
 10)
 
 search(); log(
 10)
 
-log(        # Issuing an empty line between instructions
+log(          # Issuing an empty line between instructions
 
 10)
 
-# String on several lines
+## String on several lines
 text <- "some
 text"
-text       # should print "some\ntext"
+text         # should print "some\ntext"
 
-# Idem, but with single quote
+## Idem, but with single quote
 text <- 'some
 text'
-text       # should print "some\ntext"
+text         # should print "some\ntext"
 
-# A horrible code with a variable name on two lines (but correct syntax)!
+## A horrible code with a variable name on two lines (but correct syntax)!
 `var
 1` <- 1
 `var\n1`
@@ -127,7 +127,7 @@ warnings()
 for (i in 1:60) warning("Warn ", i)
 warnings()
 
-# warning and then, error message with warn = 0 ("In addition: ...")
+## warning() and then, error message with warn = 0 ("In addition: ...")
 options(warn = 0)
 (function() {warning("Warn!"); stop("Error!"); 1:3})()
 options(warn = 1)

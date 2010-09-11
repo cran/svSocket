@@ -12,7 +12,7 @@ getSocketServerName(port = 8888)
 }
 
 \arguments{
-  \item{port}{ The port of the R socket server. }
+  \item{port}{ the port of the R socket server. }
 }
 
 \value{
@@ -25,3 +25,5 @@ getSocketServerName(port = 8888)
 
 \keyword{ IO }
 \keyword{ utilities }
+
+\concept{ stateful socket server interprocess communication }

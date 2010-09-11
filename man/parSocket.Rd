@@ -1,7 +1,7 @@
 \name{parSocket}
 \alias{parSocket}
 
-\title{ Get or set parameters specific to Sciviews socket clients. }
+\title{ Get or set parameters specific to Sciviews socket clients }
 
 \description{
   This function manage to persistently store sensible parameters for configuring
@@ -11,19 +11,25 @@
 }
 
 \usage{
-parSocket(client, serverport = 8888, ...)
+parSocket(client, serverport = 8888, clientsocket = client, \dots)
 }
 
 \arguments{
-  \item{client}{ The client identification. By default, it is the socket
+  \item{client}{ the client identification. By default, it is the socket
     identifier as it appears in \code{getSocketClients()}. Since no attempt is
     made to check if the client really exists and is connected, you can create
-    fake ones, outside of the socket server, to test your code for instance }
-  \item{serverport}{ The port on which the server is running, 8888 by default.
-    Not important for fake socket client configurations }
-  \item{\dots}{ The parameters you want to change as named arguments. Non
-    named arguments are ignored with a warning. If you specify \code{arg = NULL},
-    the corresponding variable is deleted from the environment }
+    fake ones, outside of the socket server, to test your code for instance. }
+  \item{serverport}{ the port on which the server is running, 8888 by default.
+    Not important for fake socket client configurations. }
+  \item{clientsocket}{ the Tcl name of the socket where the client is
+    connected. By default, it is the same as \code{client} name, but in case
+    it was modified, do provide a correct \code{clientsocket} string if you
+    want to be able to activate a redirection to it (see
+    \code{socketClientConnection()}). }
+  \item{\dots}{ the parameters you want to change as named arguments. Non
+    named arguments are ignored with a warning. If you specify
+    \code{arg = NULL}, the corresponding variable is deleted from the
+    environment. }
 }
 
 \value{
@@ -99,45 +105,47 @@ parSocket(client, serverport = 8888, ...)
 \author{Philippe Grosjean (\email{phgrosjean@sciviews.org})}
 
 \seealso{ \code{\link{startSocketServer}}, \code{\link{sendSocketClients}},
-  \code{\link{getSocketClients}} }
+  \code{\link{getSocketClients}}, \code{\link{socketClientConnection}}. }
 
 \examples{
-# We use a fake socket client configuration environment
+## We use a fake socket client configuration environment
 e <- parSocket("fake")
-# look at what it contains
+## Look at what it contains
 ls(e)
-# get one data
+## Get one data
 e$bare
-# or
+## ... or
 parSocket("fake")$bare
 
-# Change it
+## Change it
 parSocket("fake", bare = FALSE)$bare
-# Note it is changed too for e
+## Note it is changed too for e
 e$bare
 
-# You can change it too with
+## You can change it too with
 e$bare <- TRUE
 e$bare
 parSocket("fake")$bare
 
-# Create a new entry
+## Create a new entry
 e$foo <- "test"
 ls(e)
 parSocket("fake")$foo
-# now delete it
+## Now delete it
 parSocket("fake", foo = NULL)
 ls(e)
 
-# Our fake socket config is in TempEnv
+## Our fake socket config is in TempEnv environment
 s <- search()
 l <- length(s)
 pos <- (1:l)[s == "TempEnv"]
-ls(pos = pos)   # It is named 'SocketClient_fake'
-# delete it
+ls(pos = pos)  # It is named 'SocketClient_fake'
+## Delete it
 rm(SocketClient_fake, pos = pos)
-# do some house keeping
+## Do some house keeping
 rm(list = c("s", "l", "pos"))
 }
 
 \keyword{ IO }
+
+\concept{ stateful socket server interprocess communication }

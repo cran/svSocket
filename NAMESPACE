@@ -11,4 +11,7 @@ export(evalServer,
        closeSocketClients,
        startSocketServer,
        stopSocketServer,
-	   svTaskCallbackManager)
+	   svTaskCallbackManager,
+	   socketClientConnection)
+
+S3method(summary, sockclientconn)
