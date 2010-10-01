@@ -1,17 +1,17 @@
 import(tcltk, svMisc)
 
 export(evalServer,
-	   getSocketClients,
+       getSocketClients,
        getSocketClientsNames,
        getSocketServerName,
        getSocketServers,
-	   parSocket,
+       parSocket,
        processSocket,
        sendSocketClients,
        closeSocketClients,
        startSocketServer,
        stopSocketServer,
-	   svTaskCallbackManager,
-	   socketClientConnection)
+       svTaskCallbackManager,
+       socketClientConnection)
 
 S3method(summary, sockclientconn)

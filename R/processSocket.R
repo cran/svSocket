@@ -90,7 +90,7 @@ processSocket <- function (msg, socket, serverport, ...)
 			cat(Pre, msg, "\n", sep = "")
 		}
 		## Add previous content if we were in multiline mode
-		msg <- paste(pars$code, msg, sep = "\n")
+		if (pars$code != "") msg <- paste(pars$code, msg, sep = "\n")
 		pars$code <- ""  # This changes the original data too!
 	}
 

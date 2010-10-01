@@ -1,5 +1,11 @@
 = svSocket News
 
+== Changes in svSocket 0.9-51
+
+* processSocket() no longer adds en empty line at the top of R commands (bug
+  corrected).
+
+
 == Changes in svSocket 0.9-50
 
 * processSocket() now calls parseText() from svMisc >= 0.9-60 instead of Parse().
