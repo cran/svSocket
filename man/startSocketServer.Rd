@@ -59,7 +59,7 @@ stopSocketServer(port = 8888)
   you will find testCLI.R, a script to torture test CLI for R (console).
 }
 
-\seealso{ \code{\link{processSocket}} }
+\seealso{ \code{\link{processSocket}}, \code{\link[svHttp]{startHttpServer}} }
 
 \keyword{ IO }
 

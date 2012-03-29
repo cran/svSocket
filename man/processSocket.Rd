@@ -73,8 +73,8 @@ processSocket(msg, socket, serverport, ...)
 \author{Philippe Grosjean (\email{phgrosjean@sciviews.org})}
 
 \seealso{ \code{\link{startSocketServer}}, \code{\link{sendSocketClients}},
-  \code{\link{svTaskCallbackManager}}, \code{\link{parSocket}},
-  \code{\link[svMisc]{Parse}}, \code{\link[svMisc]{captureAll}} }
+  \code{\link{parSocket}}, \code{\link[svMisc]{Parse}},
+  \code{\link[svMisc]{captureAll}} }
 
 \examples{
 \dontrun{

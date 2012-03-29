@@ -13,8 +13,6 @@
 * Delete SocketClient_xxxx on disconnection + make sure they are all deleted
   on server stopping and on package detaching (in .Last.lib()).
 
-* Parse error => rework message a little bit + line number is 1 too much.
-
 * sourcePart() function sourcing only from line X to line Y in a file!
 
 * Send a command to the regular command line.
@@ -24,9 +22,6 @@
 * Correct little glitches with multiline mode and empty lines.
 
 * A mode that flags various parts of output.
-
-* Parse and executes one command at a time in case several commands are send at
-  once (should we? The current way of working has some interesting features!).
 
 * Unattended messages should be printed above command line.
 
@@ -49,15 +44,11 @@
         # the address is the allowed list
     }
 
-* Correct handling of the prompt when several lines of code are pasted at once!
-
-* Currently, code send through the socket server cannot be interrupted.
-
 * Implement a way to interrupt from the remote console + correct <<<esc>>>.
 
 * Manage buffered output with flush.console()!
 
-* Redirect stdin() so that scan(), etc. work (+ browser(), etc.).
+* Redirect stdin() so that scan(), etc.
 
 * For multiline commands, do number them.
 

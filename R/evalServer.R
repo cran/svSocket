@@ -8,11 +8,11 @@ evalServer <- function (con, expr, send = NULL)
 	## Robust flushing and dumping is just for windows. Linux is probably fine
 	## without but no harm to leave in for now since binary mode will moot this.
 	x <- substitute(expr)
-	if (!missing(send) && (!length(x) == 1 || mode(x) != "name"))
+	if (!missing(send) && (length(x) != 1 || mode(x) != "name"))
 		stop("When send is supplied, expr must be a target variable name (unquoted) on the server to assign the result of the send expr to.")
 	if (!is.character(x)) x <- deparse(x)
 
-	readLines(con)  # Flush input stream just incase previous call failed to clean up.
+	readLines(con)  # Flush input stream just in case previous call failed to clean up
 	if (missing(send)) {
 		cat('..Last.value <- try(eval(parse(text = "', x,
 			'"))); .f <- file(); dump("..Last.value", file = .f); flush(.f); seek(.f, 0); cat("\\n<<<startflag>>>", readLines(.f), "<<<endflag>>>\\n", sep = "\\n"); close(.f); rm(.f, ..Last.value); flush.console()\n',
@@ -44,21 +44,21 @@ evalServer <- function (con, expr, send = NULL)
 			next
 		}
 		endloc <- grep("<<<endflag>>>", obj)
-		if (length(endloc)) obj <- obj[0:(endloc - 1)]
+		if (length(endloc)) obj <- obj[0:(endloc[length(endloc)] - 1)]
 		## This is more robust than paste'ing together a potentially very
-		## large single string.
+		## large single string
 		objdump <- c(objdump, obj)
 	}
 	if (!missing(send)) {
 		if (!all(objdump == "")) stop(objdump)
 		return(TRUE)
 	}
-	start <- grep("<<<startflag>>>", objdump)
-	if (length(start) != 1)
+	startloc <- grep("<<<startflag>>>", objdump)
+	if (!length(startloc))
 		stop("Unable to find <<<startflag>>>")
 	## The startflag is because sometimes (strangely rarely) seek, flush and dump
 	## can write return value to stdout which do not source.
-	objdump <- objdump[-(1:start)]
+	objdump <- objdump[-(1:startloc[length(startloc)])]
 	## Fix any output buffer wrap issues. There are line breaks mid number
 	## sometimes which don't source.
 	## This is why warn = FALSE appears above in the call to readLines since it

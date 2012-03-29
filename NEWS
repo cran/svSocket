@@ -1,5 +1,27 @@
 = svSocket News
 
+== Changes in svSocket 0.9-53
+
+* A bug in evalServer() leading to evaluation of a condition of length > 1 in a
+  if() construct in some case is corrected. Thanks to Xiaoqian Jiang.
+
+
+== Changes in svSocket 0.9-52
+
+* processSocket() now uses the new version of captureAll() from svMisc >= 0.9-62
+  with the split = and echo = arguments. Commands and results are now interwoven
+  like in a normal console output.
+  
+* The socket server now accepts and respond to 'HEAD' HTTP requests. It can
+  process simple R commands in synchronous mode. This shoumld be reserved to
+  sense if a R server is running on a port, and which one is it (socket or http)
+  It is also used to change config parameters like options(width = ...) in a
+  synchronous way before running 'more serious' code asynchronously.
+
+* Callback mechanisms used by the server now moved to svKomodo package, so that
+  it can also be used by svHttp.
+
+
 == Changes in svSocket 0.9-51
 
 * processSocket() no longer adds en empty line at the top of R commands (bug

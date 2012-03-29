@@ -3,6 +3,62 @@ processSocket <- function (msg, socket, serverport, ...)
 	## This is the default R function that processes a command send by a socket
     ## client. 'msg' is assumed to be R code contained in a string
 
+	## Strings are supposed to be send in UTF-8 format
+#	Encoding(msg) <- "UTF-8"
+#	msg <- enc2native(msg)
+
+	## Special case of a HEAD HTTPrequest
+	## TODO: rework this, return a header and force socket disconnection on the server side
+	## HEAD should return only the header with
+	## HTTP/1.1 200 OK
+	## Server: R socket server
+	## Connection: close
+	## Content-type: text/palin;charset=UTF-8
+	## (followed by an empty line)
+	## Get does the same, but process the R command and returns processed results
+	## in the body, i.e, after the empty line
+	## Respond immediately
+	if (regexpr("^(HEAD|GET) /custom/SciViews\\?.* HTTP/.*$", msg) > 0 ) {
+		## Get the code to execute
+		code <- sub("^(HEAD|GET) /custom/SciViews\\?(.*) HTTP/.*$", "\\2", msg)
+		code <- URLdecode(code)
+		## Do we receive a <<<id=myID>>> sequence?
+		if (regexpr("^<<<id=[a-zA-Z0-9]+>>>", code) > 0) {
+			## Get the identifier
+			client <- sub("^<<<id=([a-zA-Z0-9]+)>>>.*$", "\\1", code)
+			## ... and eliminate that sequence
+			code <- sub("^<<<id=[a-zA-Z0-9]+>>>", "", code)
+		} else {
+			## The client name is simply the socket name
+			client <- socket
+		}
+		## Do some replacements
+		## Replace <<<n>>> by \n (for multiline code)
+		code <- gsub("<<<n>>>", "\n", code)
+		## Replace <<<s>>> by the corresponding client id and server port
+		code <- gsub("<<<s>>>", paste('"', client, '", ', serverport, sep = ""),
+			code)
+		## We ignore and eliminate the other <<<xxx>>> sequences
+		code <- gsub("<<<[^>]+>>>", "", code)
+		
+		## Parse and execute this code
+		expr <- parseText(code)
+		results <- try(captureAll(expr, echo = FALSE, split = FALSE),
+			silent = TRUE)
+
+		## Make sure to return something different than "" (this is used to
+		## sense if the R server is socket or HTTP)
+		if (is.null(results) || is.na(results) || !length(results) ||
+			results == "") results <- " "
+		
+		## Return captured results
+#		return(enc2utf8(results))
+		return(results)
+	}
+
+	## These are other key: value lines send by HTTP clients... just ignore
+	if (regexpr("^[-a-zA-Z]+: ", msg) > 0) return("")
+
     ## Do we receive a <<<id=myID>>> sequence?
 	if (regexpr("^<<<id=[a-zA-Z0-9]+>>>", msg) > 0) {
 		## Get the identifier
@@ -86,8 +142,10 @@ processSocket <- function (msg, socket, serverport, ...)
     }
     if (!hiddenMode) {
 		if (Echo) {
+			## Note: command lines are now echoed directly in captureAll()
+			## => no need of this any more!
 			if (pars$code == "") Pre <- Prompt else Pre <- Continue
-			cat(Pre, msg, "\n", sep = "")
+			#cat(Pre, msg, "\n", sep = "")
 		}
 		## Add previous content if we were in multiline mode
 		if (pars$code != "") msg <- paste(pars$code, msg, sep = "\n")
@@ -101,7 +159,8 @@ processSocket <- function (msg, socket, serverport, ...)
         res <- paste(ngettext(1, "Error: ", "", domain = "R"),
         sub("^[^:]+: ([^\n]+)\n[0-9]+:(.*)$", "\\1\\2", expr), sep = "")
         if (Echo) cat(res)
-        return(paste(res, pars$last, Prompt, sep = ""))
+#        return(enc2utf8(paste(res, pars$last, Prompt, sep = "")))
+		return(paste(res, pars$last, Prompt, sep = ""))
     }
     ## Is it incomplete code?
     if (!is.expression(expr)) {
@@ -109,6 +168,7 @@ processSocket <- function (msg, socket, serverport, ...)
         if (!Bare && pars$multiline) {
             pars$code <- msg
             if (returnResults) {
+#				return(enc2utf8(paste(pars$last, Continue, sep = "")))
 				return(paste(pars$last, Continue, sep = ""))
 			} else return("")
         } else {  # Multimode not allowed
@@ -116,6 +176,7 @@ processSocket <- function (msg, socket, serverport, ...)
                 "\n", sep = "")
             if (Echo) cat(res)
 			if (returnResults) {
+#				return(enc2utf8(paste(res, pars$last, Prompt, sep = "")))
 				return(paste(res, pars$last, Prompt, sep = ""))
 			} else return("")
         }
@@ -123,13 +184,17 @@ processSocket <- function (msg, socket, serverport, ...)
 	## Freeze parameters (unlinks from the environment)
 	pars <- as.list(pars)
     ## Is it something to evaluate?
-    if (length(expr) < 1) return(paste(pars$last, Prompt, sep = ""))
+    if (length(expr) < 1) {
+#		return(enc2utf8(paste(pars$last, Prompt, sep = "")))
+		return(paste(pars$last, Prompt, sep = ""))
+	}
     ## Correct code,... we evaluate it
 	## Something like this should allow for real-time echo in client, but it is too slow
 	## and it outputs all results at the end...
 	#results <- captureAll(expr, split = Echo, file = socketClientConnection(socket))
-	results <- captureAll(expr, split = Echo)
+	results <- captureAll(expr, echo = Echo, split = Echo)
 	## Should we run taskCallbacks?
+	## Note: these are installed in svKomodo package
 	if (!hiddenMode) {
 		h <- getTemp(".svTaskCallbackManager", default = NULL, mode = "list")
 		if (!is.null(h)) h$evaluate()
@@ -140,5 +205,6 @@ processSocket <- function (msg, socket, serverport, ...)
     if (!returnResults) return("")
 	Prompt <- if (pars$bare) "" else pars$prompt
     results <- paste(results, pars$last, Prompt, sep = "")
-    return(results)
+#    return(enc2utf8(results))
+	return(results)
 }

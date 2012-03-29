@@ -1,13 +1,15 @@
 .onLoad <- function (lib, pkg)
 {
 	## Create our SciViews task callback manager
-	assignTemp(".svTaskCallbackManager", svTaskCallbackManager())
+	#PhG: now moved to svKomodo!
+	#assignTemp(".svTaskCallbackManager", svTaskCallbackManager())
 }
 
 .onUnload <- function (libpath)
 {
-	removeTaskCallback("SV-taskCallbackManager")
-	rmTemp(".svTaskCallbackManager")
+	#PhG: now moved to svKomodo!
+	#removeTaskCallback("SV-taskCallbackManager")
+	#rmTemp(".svTaskCallbackManager")
 }
 
 .Last.lib <- function (libpath)
