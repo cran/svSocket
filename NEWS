@@ -1,5 +1,13 @@
 = svSocket News
 
+== Changes in svSocket 0.9-54
+
+* An example is added to ?sendSocketClients.
+
+* It now needs svMisc >= 0.9-68, and it uses SciViews:TempEnv instead of TempEnv
+  to store data from clients and servers (stateful conditions).
+
+
 == Changes in svSocket 0.9-53
 
 * A bug in evalServer() leading to evaluation of a condition of length > 1 in a
@@ -53,7 +61,7 @@
 == Changes in svSocket 0.9-49
 
 * Small change in startSocketServer(): the Tcl/Tk callback function now calls
-  a closure located in TempEnv (SocketServerProc).
+  a closure located in SciViews:TempEnv (SocketServerProc).
 
 
 == Changes in svSocket 0.9-48

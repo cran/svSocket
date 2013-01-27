@@ -10,11 +10,9 @@
 	#PhG: now moved to svKomodo!
 	#removeTaskCallback("SV-taskCallbackManager")
 	#rmTemp(".svTaskCallbackManager")
-}
-
-.Last.lib <- function (libpath)
-{
-    ## Make sure that all clients are disconnected
+	
+	#PhG: From .Last.lib(), now in .onUnload()
+	## Make sure that all clients are disconnected
     ## and all servers are closed
     Servers <- getSocketServers()
     if (is.null(Servers) || length(Servers) < 1) return()

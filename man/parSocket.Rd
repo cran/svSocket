@@ -135,10 +135,10 @@ parSocket("fake")$foo
 parSocket("fake", foo = NULL)
 ls(e)
 
-## Our fake socket config is in TempEnv environment
+## Our fake socket config is in SciViews:TempEnv environment
 s <- search()
 l <- length(s)
-pos <- (1:l)[s == "TempEnv"]
+pos <- (1:l)[s == "SciViews:TempEnv"]
 ls(pos = pos)  # It is named 'SocketClient_fake'
 ## Delete it
 rm(SocketClient_fake, pos = pos)

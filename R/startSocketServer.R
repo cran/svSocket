@@ -68,12 +68,12 @@ procfun = processSocket, secure = FALSE, local = !secure)
 			}
 			
 			"TempEnv_" <- function () {
-				pos <-  match("TempEnv", search())
+				pos <-  match("SciViews:TempEnv", search())
 				if (is.na(pos)) {  # Must create it
-					TempEnv <- list()
-					attach(TempEnv, pos = length(search()) - 1)
-					rm(TempEnv)
-					pos <- match("TempEnv", search())
+					`SciViews:TempEnv` <- list()
+					attach(`SciViews:TempEnv`, pos = length(search()) - 1)
+					rm(`SciViews:TempEnv`)
+					pos <- match("SciViews:TempEnv", search())
 				}
 				return(pos.to.env(pos))
 			}
@@ -132,7 +132,7 @@ procfun = processSocket, secure = FALSE, local = !secure)
 		} else stop("Cannot create the SciViews socket server callback function")
     }
 
-    ## Copy procfun into TempEnv as SocketServerProc_<port>
+    ## Copy procfun into SciViews:TempEnv as SocketServerProc_<port>
     assign(paste("SocketServerProc", port, sep ="_"), procfun, envir = TempEnv())
 
     ## Create the Tcl function that retrieves data from the socket
@@ -231,7 +231,7 @@ procfun = processSocket, secure = FALSE, local = !secure)
 			port, " ", port, "]", sep =""))
 	}
 
-	## Add this port in the TempEnv variable 'SocketServers'
+	## Add this port in the variable 'SocketServers' in Sciviews:TempEnv
 	socks <- getSocketServers()
 	namesocks <- names(socks)
 	if (!(portnum %in% socks)) {

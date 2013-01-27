@@ -28,7 +28,7 @@ stopSocketServer <- function (port = 8888)
 					envir = TempEnv())
 			}
 
-			## Eliminate the processing function from TempEnv
+			## Eliminate the processing function from SciViews:TempEnv
 			sockProc <- paste("SocketServerProc", Port, sep = "_")
 			if (exists(sockProc, envir = TempEnv()))
 				rm(list = sockProc, envir = TempEnv())
