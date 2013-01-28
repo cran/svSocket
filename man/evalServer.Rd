@@ -3,10 +3,9 @@
 
 \title{ Evaluate R code in a server process }
 \description{
-  This function is designed to connect two R processes together using
-  the socket server. This function allows for piloting the server R process from
-  a client R process, to evaluate R code in the server and return its results
-  to the client.
+  This function is designed to connect two R processes together using the socket
+  server. It allows for piloting the server R process from a client R process,
+  to evaluate R code in the server and return its results to the client.
 }
 
 \usage{
@@ -23,7 +22,20 @@ evalServer(con, expr, send = NULL)
   The object returned by the last evaluation in the server.
 }
 
-\author{Matthew Dowle (\email{m.dowle@wintoncapital.com})}
+\details{
+  The function serializes R objects using \code{dump()} on the server, and it
+  \code{source()}s the data on the client side. It has, thus, the same
+  limitations as \code{dump}, (see \code{?dump}), and in particular,
+  environments, external pointers, weak references and objects of type \code{S4}
+  are not serializable with \code{dump()} and will raise an error, or will
+  produce unusable objects on the client side. Note also that lists or
+  attributes of accepted objects may contain external pointers or environments,
+  and thus, the whole object becomes unserializable. In that case, try to coerce
+  your object, or extract a part of it on the server side to make sure you send
+  just the part that is transferable between the two R processes.
+}
+
+\author{Matthew Dowle (\email{mdowle@mdowle.plus.com})}
 
 \seealso{ \code{\link{sendSocketClients}} }
 
@@ -43,20 +55,20 @@ L <- 10:20
 L
 evalServer(con, L)             # L is not an the server, hence the error
 evalServer(con, L, L)          # Send it to the server
-evalServer(con,L)              # Now it is there
+evalServer(con, L)             # Now it is there
 evalServer(con, L, L + 2)
 L
 evalServer(con, L)
 
 ## More examples
-evalServer(con,"x = 42")       # Set x
-evalServer(con,"y = 10")
+evalServer(con, "x <- 42")     # Set x
+evalServer(con, "y <- 10")     # Set y
 evalServer(con, x + y)         # Don't need quotes
 evalServer(con, "x + y")       # but you can put quotes if you like
 evalServer(con, x)             # Same as get x
 evalServer(con, "x + Y")       # Return server side-error to the client
 evalServer(con, x)             # Keep working after an error
-evalServer(con, "x = 'a'")     # Embedded quotes are OK
+evalServer(con, "x <- 'a'")    # Embedded quotes are OK
 
 ## Examples of sending data
 evalServer(con, X, -42)        # Alternative way to assign to X
@@ -82,6 +94,9 @@ y
 X
 Y
 Z
+
+## Stop the socket server
+stopSocketServer()
 }
 }
 

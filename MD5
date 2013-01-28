@@ -1,8 +1,8 @@
-9250edb88b56d9a9c17e88d1ca1af1c9 *DESCRIPTION
+96c3777f89a7bacd28b6942d915ebbd3 *DESCRIPTION
 dc6dea40b220d710fdff174726fbcee4 *NAMESPACE
-a4f53d46ff0e0b2e56aeb634e4f01a28 *NEWS
+b2f44ad0f770ac658054702974eed551 *NEWS
 49440e7ef2cce8627c51942350757239 *R/closeSocketClients.R
-4c89250ce9f08ff80ba2f639f4f6b21e *R/evalServer.R
+d2b175672c40068c331b6cc4613cf086 *R/evalServer.R
 95b041b7e78bbe5c232a447a147a8536 *R/getSocket.R
 56c47bab233a953fbeb94df778c76813 *R/parSocket.R
 ed1c68dfa51a69c6e907228d9e508e18 *R/processSocket.R
@@ -18,7 +18,7 @@ ed1c68dfa51a69c6e907228d9e508e18 *R/processSocket.R
 fceffec0940ab9ebfcf079c153419272 *inst/etc/SimpleClient.Tcl
 4bbb9365f0f5ec3964b408cf58fc62f2 *inst/etc/SimpleClientSecure.Tcl
 58f20ba1ba19fcfe3fa0a7f9bc48d6d0 *man/closeSocketClients.Rd
-eb6998d7484aac35ee4974c94650f2c1 *man/evalServer.Rd
+e3f0a878b270f1ace15ceb7e371e6107 *man/evalServer.Rd
 dd7ae1e8676af132f556d2faff2e03af *man/getSocketClients.Rd
 c08fa16e1ad952bc18c758ea7389e6b2 *man/getSocketServerName.Rd
 3cb29e0abde8d6277be169f3877b4cc4 *man/getSocketServers.Rd
@@ -27,7 +27,7 @@ af78478000b408c6166d67258921bdc3 *man/processSocket.Rd
 0c0c4ff557331c5cc0a44ae560e84332 *man/sendSocketClients.Rd
 495c3ed215b8c3164c16917bd8fd98d9 *man/socketClientConnection.Rd
 3084463b661b046077155a3eaffac648 *man/startSocketServer.Rd
-5a241868b4bcdcddcf8d68edeac92667 *man/svSocket-package.Rd
+f22017d94332648f7542a1d7d6e4e87b *man/svSocket-package.Rd
 bdee3af5d74cddb60a8c543c07802d2e *testCLI/testCLI.R
 3c5741600f7bae296b488e783710a3f7 *testCLI/testCLIcmd.R
 effe1925169f497cc027e41b0e91e58c *testCLI/testCLIcmd_RMacTermFR.out

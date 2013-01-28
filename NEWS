@@ -1,5 +1,18 @@
 = svSocket News
 
+== Changes in svSocket 0.9-55
+
+* evalServer now can pass objects that contain pointers as attributes (e.g.,
+  data.table objects), but the pointers are set to NULL on the client side (they
+  are probably meaningless there). This may result in corrupted or
+  malfunctioning objects, unless they can cope with such a situation, like
+  data.table object do.
+
+* Slightly reworked examples of ?evalServer and added a details section to
+  explain which R objects cannot be transferred between R processes through
+  evalServer().
+
+
 == Changes in svSocket 0.9-54
 
 * An example is added to ?sendSocketClients.

@@ -15,7 +15,7 @@ evalServer <- function (con, expr, send = NULL)
 	readLines(con)  # Flush input stream just in case previous call failed to clean up
 	if (missing(send)) {
 		cat('..Last.value <- try(eval(parse(text = "', x,
-			'"))); .f <- file(); dump("..Last.value", file = .f); flush(.f); seek(.f, 0); cat("\\n<<<startflag>>>", readLines(.f), "<<<endflag>>>\\n", sep = "\\n"); close(.f); rm(.f, ..Last.value); flush.console()\n',
+			'"))); .f <- file(); dump("..Last.value", file = .f); flush(.f); seek(.f, 0); cat("\\n<<<startflag>>>", gsub("<pointer: [0-9a-fx]+>", "NULL", readLines(.f)), "<<<endflag>>>\\n", sep = "\\n"); close(.f); rm(.f, ..Last.value); flush.console()\n',
 			file = con, sep = "")
 		## It is important that one line only is written, so that other clients
 		## don't mix in with these lines.
