@@ -1,5 +1,15 @@
 = svSocket News
 
+== Changes in svSocket 0.9-57
+
+* /testCLI directory moved to /inst/testCLI.
+ 
+
+== Changes in svSocket 0.9-56
+
+* Author and Authors@R fields reworked in the DESCRIPTION file.
+  
+
 == Changes in svSocket 0.9-55
 
 * evalServer now can pass objects that contain pointers as attributes (e.g.,
