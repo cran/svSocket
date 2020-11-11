@@ -1,6 +1,6 @@
-f9872ad3f335bf0011547c2ca3539549 *DESCRIPTION
+eea738b5d0bc462c47a94021890aa81a *DESCRIPTION
 f3d615c9c5f3b412a53e7f71daaffaa3 *NAMESPACE
-07166815554eaa76ca384090177573d8 *NEWS.md
+4511248363b55043582e6b26c80f1e41 *NEWS.md
 82b3b2cea577ae33417651d92808c7f6 *R/closeSocketClients.R
 832775f9d5349b693f2e22b340d80bdd *R/evalServer.R
 a6593a8bf62ab6e99a4a1ead71724cfd *R/getSocket.R
@@ -14,13 +14,13 @@ e8faecf21e868f16704b0986fd9e04e7 *R/svSocket-Internal.R
 9c2cd2c392c01d0f96ae94b654ecec70 *R/svSocket-package.R
 213d1eda1f376f2152c956df7cf73cf3 *build/vignette.rds
 dccf67265573b416d6bba446856805b1 *inst/CITATION
-6187264489b357f3b94637a7a3d16b34 *inst/WORDLIST
+629539c5814a7bf8b5d3d23065123f4e *inst/WORDLIST
 115e398626750b3f523be9288f6e46c4 *inst/doc/svSocket.R
 09aa907e8469b974d46c470ca115b7d5 *inst/doc/svSocket.Rmd
-3110ae5e24697ae54739538677820169 *inst/doc/svSocket.html
-78e2fb3d015526934272b7478f249702 *inst/etc/ReadMe.txt
-fceffec0940ab9ebfcf079c153419272 *inst/etc/SimpleClient.Tcl
-adaf743c00882f6f12aad5d7c3e21e1a *inst/etc/SimpleClientSecure.Tcl
+a6d833cd918c98d37fc3dab9f8719ce1 *inst/doc/svSocket.html
+5fab1295bef7c7a93edf4663df7b6223 *inst/etc/ReadMe.txt
+304d6ac78f15110b8b1563877d880c79 *inst/etc/SimpleClient.Tcl
+62979b4247ecec76220b0ed93e22a589 *inst/etc/SimpleClientSecure.Tcl
 bdee3af5d74cddb60a8c543c07802d2e *inst/testCLI/testCLI.R
 3c5741600f7bae296b488e783710a3f7 *inst/testCLI/testCLIcmd.R
 effe1925169f497cc027e41b0e91e58c *inst/testCLI/testCLIcmd_RMacTermFR.out
@@ -49,6 +49,6 @@ c25dd7f55bd15947a1080b640043bc04 *inst/testCLI/testCLIcmd_RtermWinUS.out
 cc0fab879ebd5be003f318f1ec3d76dc *man/sendSocketClients.Rd
 2a2f441cad8a63f6334f72c92f9a3510 *man/socketClientConnection.Rd
 cfd2d68063a7041369a9f81fdc89b0ea *man/startSocketServer.Rd
-8eef9611c1598a331940ba1489f60643 *man/svSocket-package.Rd
+203047397b41976d9227d95afda47a8c *man/svSocket-package.Rd
 0622a97a2aaa3c342f09636052c2d7f5 *tests/spelling.R
 09aa907e8469b974d46c470ca115b7d5 *vignettes/svSocket.Rmd
