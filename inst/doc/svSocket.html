@@ -12,11 +12,23 @@
 
 <meta name="author" content="Philippe Grosjean (phgrosjean@sciviews.org)" />
 
-<meta name="date" content="2021-05-05" />
+<meta name="date" content="2022-05-09" />
 
 <title>SciViews socket server</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -127,7 +139,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -141,60 +333,114 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">SciViews socket server</h1>
 <h4 class="author">Philippe Grosjean (<a href="mailto:phgrosjean@sciviews.org" class="email">phgrosjean@sciviews.org</a>)</h4>
-<h4 class="date">2021-05-05</h4>
+<h4 class="date">2022-05-09</h4>
 
 
 
 <blockquote>
-<p>The SciViews {svSocket} server implements an R server that is mainly designed to interact with the R prompt from a separate process. The {svSocket} clients and the R console share the same global environment (<code>.GlobalEnv</code>). So, everybody interacts with the same variables. Use cases are to build a separate R console, to monitor or query an R session, or even, to build a complete GUI or IDE on top of R. Examples of such GUIs are <a href="https://nbcgib.uesc.br/tinnr/en/">Tinn-R</a> and Komodo with the <a href="https://community.komodoide.com/packages/addons/sciviews-k/">SciViews-K extension</a>.</p>
+<p>The SciViews {svSocket} server implements an R server that is mainly
+designed to interact with the R prompt from a separate process. The
+{svSocket} clients and the R console share the same global environment
+(<code>.GlobalEnv</code>). So, everybody interacts with the same
+variables. Use cases are to build a separate R console, to monitor or
+query an R session, or even, to build a complete GUI or IDE on top of R.
+Examples of such GUIs are <a href="https://tinn-r.org/en/">Tinn-R</a>
+and Komodo with the <a href="https://github.com/SciViews/sciviewsk">SciViews-K
+extension</a>.</p>
 </blockquote>
 <div id="quick-install-and-use" class="section level2">
 <h2>Quick install and use</h2>
-<p>The SciViews {svSocket} package provides a stateful, multi-client and preemptive socket server. Socket transactions are operational even when R is busy in its main event loop (calculation done at the prompt). This R socket server uses the excellent asynchronous socket ports management by Tcl, and thus, it needs a working version of Tcl/Tk (&gt;= 8.4), the {tcltk} R package, and R with <code>isTRUE(capabilities(&quot;tcltk&quot;))</code>.</p>
+<p>The SciViews {svSocket} package provides a stateful, multi-client and
+preemptive socket server. Socket transactions are operational even when
+R is busy in its main event loop (calculation done at the prompt). This
+R socket server uses the excellent asynchronous socket ports management
+by Tcl, and thus, it needs a working version of Tcl/Tk (&gt;= 8.4), the
+{tcltk} R package, and R with
+<code>isTRUE(capabilities(&quot;tcltk&quot;))</code>.</p>
 <p>Install the {svSocket} package as usual:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;svSocket&quot;</span>)</span></code></pre></div>
-<p>(For the development version, install first <code>devtools</code> or <code>remotes</code>, and then use something like <code>remotes::github_install(&quot;SciViews/svSocket&quot;)</code>)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start a separate R process with a script that launch a socket server on 8888</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># and wait for the varible `done` in `.GlobalEnv` to finish</span></span>
+<p>(For the development version, install first <code>devtools</code> or
+<code>remotes</code>, and then use something like
+<code>remotes::github_install(&quot;SciViews/svSocket&quot;)</code>)</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start a separate R process with a script that launch a socket server on 8889</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># and wait for the variable `done` in `.GlobalEnv` to finish</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>rscript <span class="ot">&lt;-</span> <span class="fu">Sys.which</span>(<span class="st">&quot;Rscript&quot;</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">system2</span>(rscript, <span class="st">&quot;--vanilla -e &#39;svSocket::startSocketServer(8888); while (!exists(</span><span class="sc">\&quot;</span><span class="st">done</span><span class="sc">\&quot;</span><span class="st">)) Sys.sleep(1)&#39;&quot;</span>, <span class="at">wait =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<p>Sometimes (on MacOS Catalina, for instance), you are prompted to allow for R to use a socket. Of course, you have to allow to get an operational server.</p>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">system2</span>(rscript, <span class="st">&quot;--vanilla -e &#39;svSocket::start_socket_server(8889); while (!exists(</span><span class="sc">\&quot;</span><span class="st">done</span><span class="sc">\&quot;</span><span class="st">)) Sys.sleep(1)&#39;&quot;</span>, <span class="at">wait =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>Sometimes (on MacOS Catalina or more, for instance), you are prompted
+to allow for R to use a socket. Of course, you have to allow to get an
+operational server.</p>
 <p>What this code does is:</p>
 <ul>
-<li>Get the path to <code>Rscript</code> using <code>Sysd.which</code> -Start it with a command that launches the socket server on port 8888<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> (<code>svSocket::startSocketServer(8888)</code>)</li>
-<li>Wait that the variable <code>done</code> appears in <code>.GlobalEnv</code> as a simple mean to keep the server alive.</li>
-<li>Since <code>system2()</code> is invoked with <code>wait = FALSE</code>, the command exits as soon as the server is created and you can interact at the R prompt.</li>
+<li>Get the path to <code>Rscript</code> using <code>Sys.which</code>
+-Start it with a command that launches the socket server on port 8889<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>
+(<code>svSocket::start_socket_server(8889)</code>)</li>
+<li>Wait that the variable <code>done</code> appears in
+<code>.GlobalEnv</code> as a simple mean to keep the server alive.</li>
+<li>Since <code>system2()</code> is invoked with
+<code>wait = FALSE</code>, the command exits as soon as the server is
+created and you can interact at the R prompt.</li>
 </ul>
-<p>As you can see, creating a socket server with {svSocket} is easy. Now, let’s connect to it. It is also very simple:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">socketConnection</span>(<span class="at">host =</span> <span class="st">&quot;localhost&quot;</span>, <span class="at">port =</span> <span class="dv">8888</span>,</span>
+<p>As you can see, creating a socket server with {svSocket} is easy.
+Now, let’s connect to it. It is also very simple:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">socketConnection</span>(<span class="at">host =</span> <span class="st">&quot;localhost&quot;</span>, <span class="at">port =</span> <span class="dv">8889</span>,</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">blocking =</span> <span class="cn">FALSE</span>, <span class="at">timeout =</span> <span class="dv">30</span>)</span></code></pre></div>
-<p>Here, we use the <code>socketConnection()</code> that comes with base R in non-blocking mode and a time out at 30 sec. So, {svSocket} is even not required to connect an R client to our server. The connection is not blocking. We have the control of the prompt immediately.</p>
-<p>Now, we can execute code in our R server process with <code>svSocket::evalServer()</code>:</p>
+<p>Here, we use the <code>socketConnection()</code> that comes with base
+R in non-blocking mode and a time out at 30 sec. So, {svSocket} is even
+not required to connect an R client to our server. The connection is not
+blocking. We have the control of the prompt immediately.</p>
+<p>Now, we can execute code in our R server process with
+<code>svSocket::eval_socket_server()</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(svSocket)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">evalServer</span>(con, <span class="st">&#39;1 + 1&#39;</span>)</span></code></pre></div>
-<p>The instruction is indeed executed in the server, and the result is returned to the client transparently. You now master two separate R process: the original one where you interact at the R prompt (<code>&gt;</code>), and the server process that you can interact with through <code>evalServer()</code>. To understand this, we will create the variable <code>x</code> on both processes, but with different values:</p>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">eval_socket_server</span>(con, <span class="st">&#39;1 + 1&#39;</span>)</span></code></pre></div>
+<p>The instruction is indeed executed in the server, and the result is
+returned to the client transparently. You now master two separate R
+process: the original one where you interact at the R prompt
+(<code>&gt;</code>), and the server process that you can interact with
+through <code>eval_socket_server()</code>. To understand this, we will
+create the variable <code>x</code> on both processes, but with different
+values:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Local x</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">&quot;local&quot;</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># x on the server</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">evalServer</span>(con, <span class="st">&#39;x &lt;- &quot;server&quot;&#39;</span>)</span></code></pre></div>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">eval_socket_server</span>(con, <span class="st">&#39;x &lt;- &quot;server&quot;&#39;</span>)</span></code></pre></div>
 <p>Now, let’s look what is available on the server side:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">evalServer</span>(con, <span class="st">&#39;ls()&#39;</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">evalServer</span>(con, <span class="st">&#39;x&#39;</span>)</span></code></pre></div>
-<p>Obviously, there is only one variable, <code>x</code>, with value <code>&quot;server&quot;</code>. All right … and in our original process?</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">eval_socket_server</span>(con, <span class="st">&#39;ls()&#39;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">eval_socket_server</span>(con, <span class="st">&#39;x&#39;</span>)</span></code></pre></div>
+<p>Obviously, there is only one variable, <code>x</code>, with value
+<code>&quot;server&quot;</code>. All right … and in our original process?</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span>()</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>x</span></code></pre></div>
-<p>We have <code>x</code>, but also <code>con</code> and <code>rsscript</code>. The value of <code>x</code> locally is <code>&quot;local&quot;</code>.</p>
-<p>As you can see, commands and results are rather similar. And since the processes are different, so are <code>x</code> in both processes.</p>
-<p>If you want to transfer data to the server, you can still use <code>evalServer()</code>, with the name you want for the variable on the server instead of a string with R code, and as third argument, the name of the local variable whose the content will be copied to the server. <code>evalServer()</code> manages to send the data to the server (by serializing the data on your side and deserializing it on the server). Here, we will transfer the <code>iris</code> data frame to the server under the <code>iris2</code> name:</p>
+<p>We have <code>x</code>, but also <code>con</code> and
+<code>rsscript</code>. The value of <code>x</code> locally is
+<code>&quot;local&quot;</code>.</p>
+<p>As you can see, commands and results are rather similar. And since
+the processes are different, so are <code>x</code> in both
+processes.</p>
+<p>If you want to transfer data to the server, you can still use
+<code>eval_socket_server()</code>, with the name you want for the
+variable on the server instead of a string with R code, and as third
+argument, the name of the local variable whose the content will be
+copied to the server. <code>eval_socket_server()</code> manages to send
+the data to the server (by serializing the data on your side and
+deserializing it on the server). Here, we will transfer the
+<code>iris</code> data frame to the server under the <code>iris2</code>
+name:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(iris)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">evalServer</span>(con, iris2, iris)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">evalServer</span>(con, <span class="st">&quot;ls()&quot;</span>)         <span class="co"># iris2 is there</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">evalServer</span>(con, <span class="st">&quot;head(iris2)&quot;</span>)   <span class="co"># ... and its content is OK</span></span></code></pre></div>
-<p>For more examples on using <code>evalServer</code>, see its man page with <code>?evalServer</code>.</p>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">eval_socket_server</span>(con, iris2, iris)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">eval_socket_server</span>(con, <span class="st">&quot;ls()&quot;</span>)          <span class="co"># iris2 is there</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">eval_socket_server</span>(con, <span class="st">&quot;head(iris2)&quot;</span>) <span class="co"># ... and its content is OK</span></span></code></pre></div>
+<p>For more examples on using <code>eval_socket_server</code>, see its
+man page with <code>?eval_socket_server</code>.</p>
 </div>
 <div id="lower-level-interaction" class="section level2">
 <h2>Lower-level interaction</h2>
-<p>The {svSocket} server also allows, of course, for a lower-level interaction with the server, with a lot more options. Here, you send something to the server using <code>cat, file = con)</code> (make sure to end your command by a carriage return <code>\n</code>, or the server will wait indefinitely for the next part of the instruction!), and you read results using <code>readLines(con)</code>. Of course, you must wait that R processes the command before reading results back:</p>
+<p>The {svSocket} server also allows, of course, for a lower-level
+interaction with the server, with a lot more options. Here, you send
+something to the server using <code>cat, file = con)</code> (make sure
+to end your command by a carriage return <code>\n</code>, or the server
+will wait indefinitely for the next part of the instruction!), and you
+read results using <code>readLines(con)</code>. Of course, you must wait
+that R processes the command before reading results back:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Send a command to the R server (low-level version)</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&#39;{Sys.sleep(2); &quot;Done!&quot;}</span><span class="sc">\n</span><span class="st">&#39;</span>, <span class="at">file =</span> con)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Wait for, and get response from the server</span></span>
@@ -204,10 +450,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  res <span class="ot">&lt;-</span> <span class="fu">readLines</span>(con)</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>res</span></code></pre></div>
-<p>Here you got the results send back as strings. If you want to display them on the client’s console as if it was output there (like <code>evalServer()</code> does), you should use <code>cat( sep = &quot;\n&quot;)</code>:</p>
+<p>Here you got the results send back as strings. If you want to display
+them on the client’s console as if it was output there (like
+<code>eval_socket_server()</code> does), you should use
+<code>cat( sep = &quot;\n&quot;)</code>:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(res, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
-<p>For convenience, we will wrap all this a function <code>runServer()</code>:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>runServer <span class="ot">&lt;-</span> <span class="cf">function</span>(con, code) {</span>
+<p>For convenience, we will wrap all this a function
+<code>run_socket_server()</code>:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>run_socket_server <span class="ot">&lt;-</span> <span class="cf">function</span>(con, code) {</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(code, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="at">file =</span> con)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  res <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> (<span class="sc">!</span><span class="fu">length</span>(res)) {</span>
@@ -219,34 +469,105 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(res)</span>
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>The transaction is now much easier:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">runServer</span>(con, <span class="st">&#39;{Sys.sleep(2); &quot;Done!&quot;}&#39;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">run_socket_server</span>(con, <span class="st">&#39;{Sys.sleep(2); &quot;Done!&quot;}&#39;</span>))</span></code></pre></div>
 </div>
 <div id="configuration-and-special-instructions" class="section level2">
 <h2>Configuration and special instructions</h2>
-<p>Now at the low-level (not within <code>evalServer()</code> but within our <code>runServer()</code> function), one can insert special code <code>&lt;&lt;&lt;X&gt;&gt;&gt;</code> with <code>X</code> being a marker that the server will use on his side. The last instruction we send instructed the server to wait for 2 sec and then, to return <code>&quot;Done!&quot;</code>. We have send the instruction to the server and <em>wait</em> for it to finish processing and then, we got the results back. Thus, you original R process is locked down the time the server processes the code. Note that we had to lock it down on our side using the <code>while(!length(res))</code> construct. It means that communication between the server and the client is asynchronous, but process of the command must be made synchronous. If you want to return immediately in the calling R process <em>before</em> the instruction is processed in the server, you could just consider to drop the <code>while(...)</code> section. <strong>This is not a good idea!</strong> Indeed, R will send results back and you will read them on the next <code>readLines(con)</code> you issue, and mix it with, perhaps, the result of the next instruction. So, here, we really must tell the R server to send nothing back to us. This is done by inserting the special instruction <code>&lt;&lt;&lt;h&gt;&gt;&gt;</code> on one line (surrounded by <code>\n</code>). This way, we still have to wait for the instruction to be processed on the server, but nothing is returned back to the client. Also, sending <code>&lt;&lt;&lt;H&gt;&gt;&gt;</code> will result into an immediate finalization of the transaction by the server <em>before</em> the instruction is processed.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">runServer</span>(con, <span class="st">&#39;</span><span class="sc">\n</span><span class="st">&lt;&lt;&lt;H&gt;&gt;&gt;{Sys.sleep(2); &quot;Done!&quot;}&#39;</span>))</span></code></pre></div>
-<p>Here, we got the result immediately, but it is <em>not</em> the results of the code execution. Our R server simply indicates that he got our code, he parsed it and is about to process it on his side by returning an empty string <code>&quot;&quot;</code>.</p>
-<p>There are several special instructions you can use. See <code>?parSocket</code> for further details. The server can be configured to behave in a given way, and that configuration is persistent from one connection to the other for the same client. The function <code>parSocket()</code> allows to change or query the configuration. Its first argument is the name of the client on the server-side… but from the client, you don’t necessarily know which name the server gave to you (one can connect several different clients at the same time, and default name is <code>sock</code> followed by Tcl name of the client socket connection). Using <code>&lt;&lt;&lt;s&gt;&gt;&gt;</code> as a placeholder for this name circumvents the problem. <code>parSocket()</code> returns an environment that contains configuration variables. Here is the list of configuration item for us:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">runServer</span>(con, <span class="st">&#39;ls(envir = svSocket::parSocket(&lt;&lt;&lt;s&gt;&gt;&gt;))&#39;</span>), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
-<p>The <code>bare</code> item indicates if the server sends bare results, or also returns a prompt, acting more like a terminal. By default, it returns the bare results. Here is the current value:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">runServer</span>(con, <span class="st">&#39;svSocket::parSocket(&lt;&lt;&lt;s&gt;&gt;&gt;)$bare&#39;</span>), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<p>Now at the low-level (not within <code>eval_socket_server()</code>
+but within our <code>run_socket_server()</code> function), one can
+insert special code <code>&lt;&lt;&lt;X&gt;&gt;&gt;</code> with
+<code>X</code> being a marker that the server will use on his side. The
+last instruction we send instructed the server to wait for 2 sec and
+then, to return <code>&quot;Done!&quot;</code>. We have send the instruction to
+the server and <em>wait</em> for it to finish processing and then, we
+got the results back. Thus, you original R process is locked down the
+time the server processes the code. Note that we had to lock it down on
+our side using the <code>while(!length(res))</code> construct. It means
+that communication between the server and the client is asynchronous,
+but process of the command must be made synchronous. If you want to
+return immediately in the calling R process <em>before</em> the
+instruction is processed in the server, you could just consider to drop
+the <code>while(...)</code> section. <strong>This is not a good
+idea!</strong> Indeed, R will send results back and you will read them
+on the next <code>readLines(con)</code> you issue, and mix it with,
+perhaps, the result of the next instruction. So, here, we really must
+tell the R server to send nothing back to us. This is done by inserting
+the special instruction <code>&lt;&lt;&lt;h&gt;&gt;&gt;</code> on one
+line (surrounded by <code>\n</code>). This way, we still have to wait
+for the instruction to be processed on the server, but nothing is
+returned back to the client. Also, sending
+<code>&lt;&lt;&lt;H&gt;&gt;&gt;</code> will result into an immediate
+finalization of the transaction by the server <em>before</em> the
+instruction is processed.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">run_socket_server</span>(con, <span class="st">&#39;</span><span class="sc">\n</span><span class="st">&lt;&lt;&lt;H&gt;&gt;&gt;{Sys.sleep(2); &quot;Done!&quot;}&#39;</span>))</span></code></pre></div>
+<p>Here, we got the result immediately, but it is <em>not</em> the
+results of the code execution. Our R server simply indicates that he got
+our code, he parsed it and is about to process it on his side by
+returning an empty string <code>&quot;&quot;</code>.</p>
+<p>There are several special instructions you can use. See
+<code>?par_socket_server</code> for further details. The server can be
+configured to behave in a given way, and that configuration is
+persistent from one connection to the other for the same client. The
+function <code>par_socket_server()</code> allows to change or query the
+configuration. Its first argument is the name of the client on the
+server-side… but from the client, you don’t necessarily know which name
+the server gave to you (one can connect several different clients at the
+same time, and default name is <code>sock</code> followed by Tcl name of
+the client socket connection). Using
+<code>&lt;&lt;&lt;s&gt;&gt;&gt;</code> as a placeholder for this name
+circumvents the problem. <code>par_socket_server()</code> returns an
+environment that contains configuration variables. Here is the list of
+configuration item for us:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">run_socket_server</span>(con, <span class="st">&#39;ls(envir = svSocket::par_socket_server(&lt;&lt;&lt;s&gt;&gt;&gt;))&#39;</span>), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<p>The <code>bare</code> item indicates if the server sends bare
+results, or also returns a prompt, acting more like a terminal. By
+default, it returns the bare results. Here is the current value:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">run_socket_server</span>(con, <span class="st">&#39;svSocket::par_socket_server(&lt;&lt;&lt;s&gt;&gt;&gt;)$bare&#39;</span>), <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
 <p>And here is how you can change it:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">runServer</span>(con, <span class="st">&#39;</span><span class="sc">\n</span><span class="st">&lt;&lt;&lt;H&gt;&gt;&gt;svSocket::parSocket(&lt;&lt;&lt;s&gt;&gt;&gt;, bare = FALSE)&#39;</span>))</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>(<span class="fu">runServer</span>(con, <span class="st">&#39;1 + 1&#39;</span>))</span></code></pre></div>
-<p>When <code>bare = FALSE</code> the server issues the formatted command with a prompt (<code>:&gt;</code> by default) and the result. For more information about {svSocket} server configuration, see <code>?parSocket</code>. There are also functions to manipulate the pool of clients and their configurations from the server-side, and the server can also send unattended data to client, see <code>?sendSocketClients</code>. finally, the workhorse function on the server-side is <code>processSocket()</code>. See <code>?processSocket</code> to learn more about it. You can provide your own process function to the server if you need to.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">run_socket_server</span>(con, <span class="st">&#39;</span><span class="sc">\n</span><span class="st">&lt;&lt;&lt;H&gt;&gt;&gt;svSocket::par_socket_server(&lt;&lt;&lt;s&gt;&gt;&gt;, bare = FALSE)&#39;</span>))</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>(<span class="fu">run_socket_server</span>(con, <span class="st">&#39;1 + 1&#39;</span>))</span></code></pre></div>
+<p>When <code>bare = FALSE</code> the server issues the formatted
+command with a prompt (<code>:&gt;</code> by default) and the result.
+For more information about {svSocket} server configuration, see
+<code>?par_socket_server</code>. There are also functions to manipulate
+the pool of clients and their configurations from the server-side, and
+the server can also send unattended data to client, see
+<code>?send_socket_clients</code>. finally, the workhorse function on
+the server-side is <code>process_socket_server()</code>. See
+<code>?process_socket_server</code> to learn more about it. You can
+provide your own process function to the server if you need to.</p>
 </div>
 <div id="disconnection" class="section level2">
 <h2>Disconnection</h2>
-<p>Don’t forget to close the connection, once you have done using <code>close(con)</code>, and you can also close the server from the server-side by using <code>stopSocketServer()</code>. But never use it from the client-side because you will obviously break in the middle of the transaction. If you want to close the server from the client, you have to install a mechanisms that will nicely shut down the server <em>after</em> the transaction is processed. Here, we have installed such a mechanism by detecting the presence of a variable named <code>done</code> on the server-side. So:</p>
+<p>Don’t forget to close the connection, once you have done using
+<code>close(con)</code>, and you can also close the server from the
+server-side by using <code>stop_socket_server()</code>. But never use it
+from the client-side because you will obviously break in the middle of
+the transaction. If you want to close the server from the client, you
+have to install a mechanisms that will nicely shut down the server
+<em>after</em> the transaction is processed. Here, we have installed
+such a mechanism by detecting the presence of a variable named
+<code>done</code> on the server-side. So:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Usually, the client does not stop the server, but it is possible here</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">evalServer</span>(con, <span class="st">&#39;done &lt;- NULL&#39;</span>) <span class="co"># The server will stop after this transaction</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">eval_socket_server</span>(con, <span class="st">&#39;done &lt;- NULL&#39;</span>) <span class="co"># The server will stop after this transaction</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">close</span>(con)</span></code></pre></div>
-<p>You can also access the {svSocket} server from another language. There is a very basic example written in Tcl in the <code>/etc</code> subdirectory of the {svSocket} package. See the <code>ReadMe.txt</code> file there. The Tcl script <code>SimpleClient.tcl</code> implements a Tcl client in a few dozens of code lines. For other examples, you can inspect the code of <a href="https://community.komodoide.com/packages/addons/sciviews-k/">SciViews-K</a>, and the code of <a href="https://nbcgib.uesc.br/tinnr/en/">Tinn-R</a> for a Pascal version. Writing clients in C, Java, Python, etc. should not be difficult if you inspire you from these examples. Finally, there is another implementation of a similar R server through HTTP in the {svHttp} package.</p>
+<p>You can also access the {svSocket} server from another language.
+There is a very basic example written in Tcl in the <code>/etc</code>
+subdirectory of the {svSocket} package. See the <code>ReadMe.txt</code>
+file there. The Tcl script <code>SimpleClient.tcl</code> implements a
+Tcl client in a few dozens of code lines. For other examples, you can
+inspect the code of <a href="https://community.komodoide.com/packages/addons/sciviews-k/">SciViews-K</a>,
+and the code of <a href="https://nbcgib.uesc.br/tinnr/en/">Tinn-R</a>
+for a Pascal version. Writing clients in C, Java, Python, etc. should
+not be difficult if you inspire you from these examples. Finally, there
+is another implementation of a similar R server through HTTP in the
+{svHttp} package.</p>
 </div>
-<div class="footnotes">
+<div class="footnotes footnotes-end-of-document">
 <hr />
 <ol>
-<li id="fn1"><p>Of course, this port must be free. If not, just use another value.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>Of course, this port must be free. If not, just use
+another value.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 
